@@ -1,22 +1,34 @@
 <?php
 
-test('api resources')->expect('EFinancialsClient\API')->toOnlyUse([
-    'EFinancialsClient\Client',
+test('resources')->expect('EFinancialsClient\Resources')->toOnlyUse([
+    'EFinancialsClient\Contracts\TransporterContract',
+    'EFinancialsClient\Resources\Concerns\Transportable',
+    'EFinancialsClient\Responses',
+    'EFinancialsClient\ValueObjects\Transporter\Payload',
+    'EFinancialsClient\ValueObjects\Transporter\Response',
     'DateTime',
+    'DateTimeInterface',
     'InvalidArgumentException',
-]);
+])->ignoring('EFinancialsClient\Resources\Concerns\Transportable');
 
 test('client')->expect('EFinancialsClient\Client')->toOnlyUse([
-    'EFinancialsClient\API',
-    'GuzzleHttp\Client',
-    'GuzzleHttp\Exception\RequestException',
-    'Psr\Http\Message\ResponseInterface',
-    'JsonException',
-    'ValueError',
+    'EFinancialsClient\Contracts\ClientContract',
+    'EFinancialsClient\Contracts\TransporterContract',
+    'EFinancialsClient\Resources',
 ]);
 
-test('api resources extend abstract api')
-    ->expect('EFinancialsClient\API')
+test('transporter')->expect('EFinancialsClient\Transporters')->toOnlyUse([
+    'EFinancialsClient\Contracts\TransporterContract',
+    'EFinancialsClient\Exceptions',
+    'EFinancialsClient\ValueObjects',
+    'Closure',
+    'JsonException',
+    'Psr\Http\Client',
+    'Psr\Http\Message',
+]);
+
+test('resources are final')
+    ->expect('EFinancialsClient\Resources')
     ->classes()
-    ->toExtend('EFinancialsClient\API\AbstractAPI')
-    ->ignoring('EFinancialsClient\API\AbstractAPI');
+    ->toBeFinal()
+    ->ignoring('EFinancialsClient\Resources\Concerns\Transportable');

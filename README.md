@@ -7,8 +7,10 @@ API docs: [OpenAPI HTML](https://demo-rmp-api.rik.ee/api.html) · [openapi.yaml]
 ## Installation
 
 ```bash
-composer require e-financials/php-client
+composer require e-financials/php-client guzzlehttp/guzzle
 ```
+
+This package is PSR-18 based. Provide any PSR-18 HTTP client; Guzzle is the usual choice and is used for discovery when installed.
 
 ## Authentication
 
@@ -24,21 +26,40 @@ Generate an API key in e-Arveldaja under **Seadistused → Üldised seadistused*
 
 require 'vendor/autoload.php';
 
-use EFinancialsClient\Client;
+$client = EFinancials::factory()
+    ->withApiKeyId('api_key_id')
+    ->withApiKeyPublic('api_key_public')
+    ->withApiKeyPassword('api_key_password')
+    // ->withBaseUri('https://demo-rmp-api.rik.ee') // default demo
+    ->make();
 
-$client = new Client(
-    apiKeyId: 'api_key_id',
-    apiKeyPublic: 'api_key_public',
-    apiKeyPassword: 'api_key_password',
-    // apiUrl: 'https://demo-rmp-api.rik.ee', // default demo
-);
+$currencies = $client->currencies()->all();
+$clients = $client->clients()->all();
 
-print_r($client->clients()->all());
+print_r($currencies->toArray());
+print_r($clients->toArray());
 print_r($client->salesInvoices()->all());
 print_r($client->journals()->all());
-print_r($client->transactions()->all());
-print_r($client->purchaseInvoices()->all());
-print_r($client->templates()->all());
+```
+
+Or the shortcut:
+
+```php
+$client = EFinancials::client('api_key_id', 'api_key_public', 'api_key_password');
+```
+
+## Testing with ClientFake
+
+```php
+use EFinancialsClient\Responses\Currencies\ListResponse;
+use EFinancialsClient\Testing\ClientFake;
+
+$client = new ClientFake([
+    ListResponse::fake(),
+]);
+
+$response = $client->currencies()->all();
+$client->assertSent('currencies');
 ```
 
 ## Development

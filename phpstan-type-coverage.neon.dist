@@ -1,0 +1,11 @@
+includes:
+    - phpstan.neon.dist
+    - vendor/tomasvotruba/type-coverage/config/extension.neon
+
+parameters:
+    type_coverage:
+        return: 100
+        param: 100
+        property: 100
+        constant: 100
+        declare: 100

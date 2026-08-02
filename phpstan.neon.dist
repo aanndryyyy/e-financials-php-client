@@ -2,4 +2,7 @@ parameters:
     level: max
     paths:
         - src
+    excludePaths:
+        analyse:
+            - src/Testing
     reportUnmatchedIgnoredErrors: true
