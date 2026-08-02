@@ -72,14 +72,4 @@ final class TransporterFake implements TransporterContract
 
         return Response::from($response);
     }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function requestContent(Payload $payload): string
-    {
-        $response = $this->request($payload);
-
-        return json_encode($response->data(), JSON_THROW_ON_ERROR);
-    }
 }

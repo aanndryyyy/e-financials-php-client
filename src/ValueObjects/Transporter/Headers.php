@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace EFinancialsClient\ValueObjects\Transporter;
 
-use EFinancialsClient\Enums\Transporter\ContentType;
-
 /**
  * @internal
  */
@@ -22,14 +20,6 @@ final class Headers
     public static function create(): self
     {
         return new self([]);
-    }
-
-    public function withContentType(ContentType $contentType): self
-    {
-        return new self([
-            ...$this->headers,
-            'Content-Type' => $contentType->value,
-        ]);
     }
 
     public function withCustomHeader(string $name, string $value): self

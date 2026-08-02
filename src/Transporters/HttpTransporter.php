@@ -66,21 +66,6 @@ final class HttpTransporter implements TransporterContract
         return Response::from($data);
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function requestContent(Payload $payload): string
-    {
-        $request = $payload->toRequest($this->baseUri, $this->headers, $this->credentials);
-
-        $response = $this->sendRequest(fn (): ResponseInterface => $this->client->sendRequest($request));
-        $contents = (string) $response->getBody();
-
-        $this->throwIfError($response, $contents);
-
-        return $contents;
-    }
-
     private function sendRequest(Closure $callable): ResponseInterface
     {
         try {

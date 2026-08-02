@@ -153,12 +153,14 @@ final class Clients
      *
      * @param  int  $id  Client identificator.
      */
-    public function delete(int $id): mixed
+    public function delete(int $id): ApiResponse
     {
         $payload = Payload::delete('clients/'.$id);
+
+        /** @var Response<array{code: int, messages?: array<int, string>, created_object_id?: int|null}> $response */
         $response = $this->transporter->request($payload);
 
-        return $response->data();
+        return ApiResponse::from($response->data());
     }
 
     /**
@@ -168,12 +170,14 @@ final class Clients
      *
      * @param  int  $id  Client identificator.
      */
-    public function deactivate(int $id): mixed
+    public function deactivate(int $id): ApiResponse
     {
         $payload = Payload::patch('clients/'.$id.'/deactivate');
+
+        /** @var Response<array{code: int, messages?: array<int, string>, created_object_id?: int|null}> $response */
         $response = $this->transporter->request($payload);
 
-        return $response->data();
+        return ApiResponse::from($response->data());
     }
 
     /**
@@ -183,11 +187,13 @@ final class Clients
      *
      * @param  int  $id  Client identificator.
      */
-    public function reactivate(int $id): mixed
+    public function reactivate(int $id): ApiResponse
     {
         $payload = Payload::patch('clients/'.$id.'/reactivate');
+
+        /** @var Response<array{code: int, messages?: array<int, string>, created_object_id?: int|null}> $response */
         $response = $this->transporter->request($payload);
 
-        return $response->data();
+        return ApiResponse::from($response->data());
     }
 }

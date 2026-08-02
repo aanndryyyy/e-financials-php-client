@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace EFinancialsClient\ValueObjects\Transporter;
 
-use EFinancialsClient\Enums\Transporter\ContentType;
 use EFinancialsClient\Enums\Transporter\Method;
 use EFinancialsClient\ValueObjects\ApiCredentials;
 use Http\Discovery\Psr17Factory;
@@ -108,7 +107,7 @@ final class Payload
 
         $queryTime = gmdate("Y-m-d\TH:i:s");
         $headers = $headers
-            ->withContentType(ContentType::JSON)
+            ->withCustomHeader('Content-Type', 'application/json')
             ->withCustomHeader('X-AUTH-QUERYTIME', $queryTime)
             ->withCustomHeader('X-AUTH-KEY', $credentials->authKey($signedPath, $queryTime));
 
