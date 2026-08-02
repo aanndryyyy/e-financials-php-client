@@ -68,11 +68,16 @@ Requires PHP 8.2+.
 
 ```bash
 composer install
-composer test        # lint + types + type-coverage + unit
-composer lint        # Laravel Pint
-composer test:types  # PHPStan
-composer test:unit   # Pest
+composer test         # lint + types + type-coverage + unit
+composer lint         # Laravel Pint
+composer test:types   # PHPStan
+composer test:unit    # Pest 5
+composer test:mutate  # Pest mutation testing (requires PCOV/Xdebug)
 ```
+
+Dev tooling targets PHP 8.4+ (Pest 5). The library runtime still supports PHP 8.2+.
+
+Mutation testing currently applies a local Composer patch for [pestphp/pest#1790](https://github.com/pestphp/pest/issues/1790) (`php-code-coverage` 14 `--coverage-php` format); remove `patches/` once upstream ships the fix.
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
 

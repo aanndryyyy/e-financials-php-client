@@ -66,6 +66,9 @@ final class HttpTransporter implements TransporterContract
         return Response::from($data);
     }
 
+    /**
+     * @param  Closure(): ResponseInterface  $callable
+     */
     private function sendRequest(Closure $callable): ResponseInterface
     {
         try {

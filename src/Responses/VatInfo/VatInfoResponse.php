@@ -6,6 +6,7 @@ namespace EFinancialsClient\Responses\VatInfo;
 
 use EFinancialsClient\Contracts\ResponseContract;
 use EFinancialsClient\Responses\Concerns\ArrayAccessible;
+use EFinancialsClient\Responses\Concerns\NormalizesAttributes;
 use EFinancialsClient\Testing\Responses\Concerns\Fakeable;
 
 /**
@@ -19,6 +20,7 @@ final class VatInfoResponse implements ResponseContract
     use ArrayAccessible;
 
     use Fakeable;
+    use NormalizesAttributes;
 
     private function __construct(
         public readonly ?string $vatNumber,
@@ -26,17 +28,13 @@ final class VatInfoResponse implements ResponseContract
     ) {}
 
     /**
-     * @param  array{vat_number?: string|null, tax_refnumber?: string|null}  $attributes
+     * @param  array<array-key, mixed>  $attributes
      */
     public static function from(array $attributes): self
     {
         return new self(
-            isset($attributes['vat_number']) && $attributes['vat_number'] !== ''
-                ? (string) $attributes['vat_number']
-                : null,
-            isset($attributes['tax_refnumber']) && $attributes['tax_refnumber'] !== ''
-                ? (string) $attributes['tax_refnumber']
-                : null,
+            self::stringOrNull($attributes['vat_number'] ?? null),
+            self::stringOrNull($attributes['tax_refnumber'] ?? null),
         );
     }
 

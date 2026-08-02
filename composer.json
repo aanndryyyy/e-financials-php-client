@@ -10,18 +10,23 @@
         "psr/http-client": "^1.0.3",
         "psr/http-client-implementation": "^1.0.1",
         "psr/http-factory-implementation": "*",
-        "psr/http-message": "^1.1.0|^2.0.0"
+        "psr/http-message": "^2.0.0"
     },
     "require-dev": {
-        "guzzlehttp/guzzle": "^7.5",
-        "laravel/pint": "^1.25.1",
+        "cweagans/composer-patches": "^1.7.3",
+        "guzzlehttp/guzzle": "^8.0.1",
+        "guzzlehttp/psr7": "^3.0.0",
+        "laravel/pint": "^1.30.3",
         "mockery/mockery": "^1.6.12",
-        "nunomaduro/collision": "^8.8.3",
-        "pestphp/pest": "^3.8.2|^4.1.4",
-        "pestphp/pest-plugin-arch": "^3.1.1|^4.0.0",
-        "pestphp/pest-plugin-type-coverage": "^3.5.1|^4.0.0",
-        "phpstan/phpstan": "^1.12.32",
-        "symfony/var-dumper": "^7.3.5"
+        "nunomaduro/collision": "^8.9.5",
+        "pestphp/pest": "^5.0.2",
+        "pestphp/pest-plugin-arch": "^5.0.0",
+        "pestphp/pest-plugin-mutate": "^5.0.0",
+        "pestphp/pest-plugin-type-coverage": "^5.0.0",
+        "phpstan/phpstan": "^2.2.7",
+        "phpstan/phpstan-deprecation-rules": "^2.0.5",
+        "phpstan/phpstan-strict-rules": "^2.0.12",
+        "symfony/var-dumper": "^8.1.2"
     },
     "autoload": {
         "psr-4": {
@@ -42,8 +47,16 @@
         "sort-packages": true,
         "preferred-install": "dist",
         "allow-plugins": {
+            "cweagans/composer-patches": true,
             "pestphp/pest-plugin": true,
             "php-http/discovery": false
+        }
+    },
+    "extra": {
+        "patches": {
+            "pestphp/pest-plugin-mutate": {
+                "Fix php-code-coverage 14 coverage-php array format (pestphp/pest#1790)": "patches/pest-plugin-mutate-coverage-php-14.patch"
+            }
         }
     },
     "scripts": {
@@ -52,6 +65,7 @@
         "test:types": "phpstan analyse --ansi",
         "test:type-coverage": "phpstan analyse -c phpstan-type-coverage.neon.dist --ansi",
         "test:unit": "pest --colors=always",
+        "test:mutate": "pest --mutate --parallel --everything --covered-only --min=20 --colors=always",
         "test": [
             "@test:lint",
             "@test:types",

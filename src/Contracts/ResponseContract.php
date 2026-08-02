@@ -34,7 +34,7 @@ interface ResponseContract extends ArrayAccess
     /**
      * @template TOffsetKey of key-of<TArray>
      *
-     * @param  TOffsetKey  $offset
+     * @param  TOffsetKey|null  $offset
      * @param  TArray[TOffsetKey]  $value
      */
     public function offsetSet(mixed $offset, mixed $value): never;
