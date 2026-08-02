@@ -5,9 +5,17 @@ declare(strict_types=1);
 namespace EFinancialsClient\Resources;
 
 use DateTime;
+use DateTimeInterface;
 use EFinancialsClient\Contracts\Resources\SalesInvoicesContract;
 use EFinancialsClient\Resources\Concerns\Transportable;
+use EFinancialsClient\Responses\ApiFileResponse;
+use EFinancialsClient\Responses\ApiResponse;
+use EFinancialsClient\Responses\SalesInvoices\ListResponse;
+use EFinancialsClient\Responses\SalesInvoices\SaleInvoiceDeliveryOptionsResponse;
+use EFinancialsClient\Responses\SalesInvoices\SaleInvoiceResponse;
 use EFinancialsClient\ValueObjects\Transporter\Payload;
+use EFinancialsClient\ValueObjects\Transporter\Response;
+use InvalidArgumentException;
 
 final class SalesInvoices implements SalesInvoicesContract
 {
@@ -34,7 +42,7 @@ final class SalesInvoices implements SalesInvoicesContract
         string $status = '',
         string $paymentStatus = '',
         ?int $clientsId = null,
-    ): mixed {
+    ): ListResponse {
         $query = [];
 
         if ($page !== 1) {
@@ -43,7 +51,7 @@ final class SalesInvoices implements SalesInvoicesContract
 
         if ($modifiedSince !== '') {
             $query['modified_since'] = ($modifiedSince instanceof DateTime)
-                ? $modifiedSince->format(\DateTimeInterface::ATOM)
+                ? $modifiedSince->format(DateTimeInterface::ATOM)
                 : $modifiedSince;
         }
 
@@ -72,9 +80,11 @@ final class SalesInvoices implements SalesInvoicesContract
         }
 
         $payload = Payload::get('sale_invoices', $query);
+
+        /** @var Response<array{current_page: int, total_pages: int, items: array<int, array<string, mixed>>}> $response */
         $response = $this->transporter->request($payload);
 
-        return $response->data();
+        return ListResponse::from($response->data());
     }
 
     /**
@@ -84,12 +94,14 @@ final class SalesInvoices implements SalesInvoicesContract
      *
      * @param  int  $id  Sale invoice identificator.
      */
-    public function get(int $id): mixed
+    public function get(int $id): SaleInvoiceResponse
     {
         $payload = Payload::get('sale_invoices/'.$id);
+
+        /** @var Response<array<string, mixed>> $response */
         $response = $this->transporter->request($payload);
 
-        return $response->data();
+        return SaleInvoiceResponse::from($response->data());
     }
 
     /**
@@ -97,20 +109,9 @@ final class SalesInvoices implements SalesInvoicesContract
      *
      * @see https://rmp-api.rik.ee/api.html#operation/post-sale_invoices
      *
-     * @param array<string,mixed>|array{
-     *   "sale_invoice_type": "INVOICE",
-     *   "cl_templates_id": 1,
-     *   "clients_id": 126,
-     *   "cl_countries_id": "EST",
-     *   "number_suffix": "91",
-     *   "create_date": "2016-02-15",
-     *   "journal_date": "2016-02-15",
-     *   "term_days": 30,
-     *   "cl_currencies_id": "EUR",
-     *   "show_client_balance": false
-     * } $parameters
+     * @param  array<string, mixed>  $parameters
      */
-    public function create(array $parameters = []): mixed
+    public function create(array $parameters = []): ApiResponse
     {
         $missingRequiredParameters = array_diff_key(
             array_flip(
@@ -133,15 +134,17 @@ final class SalesInvoices implements SalesInvoicesContract
         if (count($missingRequiredParameters) !== 0) {
             $missingKeys = implode(', ', array_keys($missingRequiredParameters));
 
-            throw new \InvalidArgumentException(
+            throw new InvalidArgumentException(
                 "Missing required parameter(s): $missingKeys"
             );
         }
 
         $payload = Payload::post('sale_invoices', $parameters);
+
+        /** @var Response<array{code: int, messages?: array<int, string>, created_object_id?: int|null}> $response */
         $response = $this->transporter->request($payload);
 
-        return $response->data();
+        return ApiResponse::from($response->data());
     }
 
     /**
@@ -150,20 +153,9 @@ final class SalesInvoices implements SalesInvoicesContract
      * @see https://rmp-api.rik.ee/api.html#operation/patch-sale_invoices_one
      *
      * @param  int  $id  Sale invoice identificator.
-     * @param array<string,mixed>|array{
-     *   "sale_invoice_type": "INVOICE",
-     *   "cl_templates_id": 1,
-     *   "clients_id": 126,
-     *   "cl_countries_id": "EST",
-     *   "number_suffix": "91",
-     *   "create_date": "2016-02-15",
-     *   "journal_date": "2016-02-15",
-     *   "term_days": 30,
-     *   "cl_currencies_id": "EUR",
-     *   "show_client_balance": false
-     * } $parameters
+     * @param  array<string, mixed>  $parameters
      */
-    public function update(int $id, array $parameters): mixed
+    public function update(int $id, array $parameters): ApiResponse
     {
         $missingRequiredParameters = array_diff_key(
             array_flip(
@@ -186,15 +178,17 @@ final class SalesInvoices implements SalesInvoicesContract
         if (count($missingRequiredParameters) !== 0) {
             $missingKeys = implode(', ', array_keys($missingRequiredParameters));
 
-            throw new \InvalidArgumentException(
+            throw new InvalidArgumentException(
                 "Missing required parameter(s): $missingKeys"
             );
         }
 
         $payload = Payload::patch('sale_invoices/'.$id, $parameters);
+
+        /** @var Response<array{code: int, messages?: array<int, string>, created_object_id?: int|null}> $response */
         $response = $this->transporter->request($payload);
 
-        return $response->data();
+        return ApiResponse::from($response->data());
     }
 
     /**
@@ -204,12 +198,14 @@ final class SalesInvoices implements SalesInvoicesContract
      *
      * @param  int  $id  Sale invoice identificator.
      */
-    public function delete(int $id): mixed
+    public function delete(int $id): ApiResponse
     {
         $payload = Payload::delete('sale_invoices/'.$id);
+
+        /** @var Response<array{code: int, messages?: array<int, string>, created_object_id?: int|null}> $response */
         $response = $this->transporter->request($payload);
 
-        return $response->data();
+        return ApiResponse::from($response->data());
     }
 
     /**
@@ -219,12 +215,14 @@ final class SalesInvoices implements SalesInvoicesContract
      *
      * @param  int  $id  Sale invoice identificator.
      */
-    public function register(int $id): mixed
+    public function register(int $id): ApiResponse
     {
         $payload = Payload::patch('sale_invoices/'.$id.'/register');
+
+        /** @var Response<array{code: int, messages?: array<int, string>, created_object_id?: int|null}> $response */
         $response = $this->transporter->request($payload);
 
-        return $response->data();
+        return ApiResponse::from($response->data());
     }
 
     /**
@@ -234,12 +232,14 @@ final class SalesInvoices implements SalesInvoicesContract
      *
      * @param  int  $id  Sale invoice identificator.
      */
-    public function invalidate(int $id): mixed
+    public function invalidate(int $id): ApiResponse
     {
         $payload = Payload::patch('sale_invoices/'.$id.'/invalidate');
+
+        /** @var Response<array{code: int, messages?: array<int, string>, created_object_id?: int|null}> $response */
         $response = $this->transporter->request($payload);
 
-        return $response->data();
+        return ApiResponse::from($response->data());
     }
 
     /**
@@ -249,12 +249,14 @@ final class SalesInvoices implements SalesInvoicesContract
      *
      * @param  int  $id  Sale invoice identificator.
      */
-    public function getXml(int $id): mixed
+    public function getXml(int $id): ApiFileResponse
     {
         $payload = Payload::get('sale_invoices/'.$id.'/xml');
+
+        /** @var Response<array{name: string, contents: string}> $response */
         $response = $this->transporter->request($payload);
 
-        return $response->data();
+        return ApiFileResponse::from($response->data());
     }
 
     /**
@@ -264,12 +266,14 @@ final class SalesInvoices implements SalesInvoicesContract
      *
      * @param  int  $id  Sale invoice identificator.
      */
-    public function getSystemPdf(int $id): mixed
+    public function getSystemPdf(int $id): ApiFileResponse
     {
         $payload = Payload::get('sale_invoices/'.$id.'/pdf_system');
+
+        /** @var Response<array{name: string, contents: string}> $response */
         $response = $this->transporter->request($payload);
 
-        return $response->data();
+        return ApiFileResponse::from($response->data());
     }
 
     /**
@@ -279,12 +283,14 @@ final class SalesInvoices implements SalesInvoicesContract
      *
      * @param  int  $id  Sale invoice identificator.
      */
-    public function getFile(int $id): mixed
+    public function getFile(int $id): ApiFileResponse
     {
         $payload = Payload::get('sale_invoices/'.$id.'/document_user');
+
+        /** @var Response<array{name: string, contents: string}> $response */
         $response = $this->transporter->request($payload);
 
-        return $response->data();
+        return ApiFileResponse::from($response->data());
     }
 
     /**
@@ -293,12 +299,9 @@ final class SalesInvoices implements SalesInvoicesContract
      * @see https://rmp-api.rik.ee/api.html#operation/put-sale_invoices_one_document_user
      *
      * @param  int  $id  Sale invoice identificator.
-     * @param array<string,mixed>|array{
-     *   "name": string,
-     *   "contents": string,
-     * } $parameters Base64-encoded file payload.
+     * @param  array<string, mixed>  $parameters  Base64-encoded file payload.
      */
-    public function updateFile(int $id, array $parameters): mixed
+    public function updateFile(int $id, array $parameters): ApiResponse
     {
         $missingRequiredParameters = array_diff_key(
             array_flip(
@@ -313,15 +316,17 @@ final class SalesInvoices implements SalesInvoicesContract
         if (count($missingRequiredParameters) !== 0) {
             $missingKeys = implode(', ', array_keys($missingRequiredParameters));
 
-            throw new \InvalidArgumentException(
+            throw new InvalidArgumentException(
                 "Missing required parameter(s): $missingKeys"
             );
         }
 
-        $payload = Payload::put('sale_invoices/'.$id.'/document_user');
+        $payload = Payload::put('sale_invoices/'.$id.'/document_user', $parameters);
+
+        /** @var Response<array{code: int, messages?: array<int, string>, created_object_id?: int|null}> $response */
         $response = $this->transporter->request($payload);
 
-        return $response->data();
+        return ApiResponse::from($response->data());
     }
 
     /**
@@ -331,12 +336,14 @@ final class SalesInvoices implements SalesInvoicesContract
      *
      * @param  int  $id  Sale invoice identificator.
      */
-    public function deleteFile(int $id): mixed
+    public function deleteFile(int $id): ApiResponse
     {
         $payload = Payload::delete('sale_invoices/'.$id.'/document_user');
+
+        /** @var Response<array{code: int, messages?: array<int, string>, created_object_id?: int|null}> $response */
         $response = $this->transporter->request($payload);
 
-        return $response->data();
+        return ApiResponse::from($response->data());
     }
 
     /**
@@ -346,12 +353,14 @@ final class SalesInvoices implements SalesInvoicesContract
      *
      * @param  int  $id  Sale invoice identificator.
      */
-    public function getDeliveryOptions(int $id): mixed
+    public function getDeliveryOptions(int $id): SaleInvoiceDeliveryOptionsResponse
     {
         $payload = Payload::get('sale_invoices/'.$id.'/delivery_options');
+
+        /** @var Response<array<string, mixed>> $response */
         $response = $this->transporter->request($payload);
 
-        return $response->data();
+        return SaleInvoiceDeliveryOptionsResponse::from($response->data());
     }
 
     /**
@@ -360,15 +369,9 @@ final class SalesInvoices implements SalesInvoicesContract
      * @see https://rmp-api.rik.ee/api.html#operation/patch-sale_invoices_one_deliver
      *
      * @param  int  $id  Sale invoice identificator.
-     * @param array<string,mixed>|array{
-     *   "send_einvoice": bool,
-     *   "send_email": bool,
-     *   "email_addresses": string,
-     *   "email_subject": string,
-     *   "email_body": string,
-     * } $parameters
+     * @param  array<string, mixed>  $parameters
      */
-    public function deliver(int $id, array $parameters): mixed
+    public function deliver(int $id, array $parameters): ApiResponse
     {
         $missingRequiredParameters = array_diff_key(
             array_flip(
@@ -383,14 +386,16 @@ final class SalesInvoices implements SalesInvoicesContract
         if (count($missingRequiredParameters) !== 0) {
             $missingKeys = implode(', ', array_keys($missingRequiredParameters));
 
-            throw new \InvalidArgumentException(
+            throw new InvalidArgumentException(
                 "Missing required parameter(s): $missingKeys"
             );
         }
 
         $payload = Payload::patch('sale_invoices/'.$id.'/deliver', $parameters);
+
+        /** @var Response<array{code: int, messages?: array<int, string>, created_object_id?: int|null}> $response */
         $response = $this->transporter->request($payload);
 
-        return $response->data();
+        return ApiResponse::from($response->data());
     }
 }
