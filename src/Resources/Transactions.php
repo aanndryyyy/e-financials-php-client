@@ -5,9 +5,16 @@ declare(strict_types=1);
 namespace EFinancialsClient\Resources;
 
 use DateTime;
+use DateTimeInterface;
 use EFinancialsClient\Contracts\Resources\TransactionsContract;
 use EFinancialsClient\Resources\Concerns\Transportable;
+use EFinancialsClient\Responses\ApiFileResponse;
+use EFinancialsClient\Responses\ApiResponse;
+use EFinancialsClient\Responses\Transactions\ListResponse;
+use EFinancialsClient\Responses\Transactions\TransactionResponse;
 use EFinancialsClient\ValueObjects\Transporter\Payload;
+use EFinancialsClient\ValueObjects\Transporter\Response;
+use InvalidArgumentException;
 
 final class Transactions implements TransactionsContract
 {
@@ -34,7 +41,7 @@ final class Transactions implements TransactionsContract
         string $status = '',
         string $type = '',
         ?int $clientsId = null,
-    ): mixed {
+    ): ListResponse {
         $query = [];
 
         if ($page !== 1) {
@@ -43,7 +50,7 @@ final class Transactions implements TransactionsContract
 
         if ($modifiedSince !== '') {
             $query['modified_since'] = ($modifiedSince instanceof DateTime)
-                ? $modifiedSince->format(\DateTimeInterface::ATOM)
+                ? $modifiedSince->format(DateTimeInterface::ATOM)
                 : $modifiedSince;
         }
 
@@ -72,9 +79,11 @@ final class Transactions implements TransactionsContract
         }
 
         $payload = Payload::get('transactions', $query);
+
+        /** @var Response<array{current_page: int, total_pages: int, items: array<int, array<string, mixed>>}> $response */
         $response = $this->transporter->request($payload);
 
-        return $response->data();
+        return ListResponse::from($response->data());
     }
 
     /**
@@ -84,12 +93,14 @@ final class Transactions implements TransactionsContract
      *
      * @param  int  $id  Transaction identificator.
      */
-    public function get(int $id): mixed
+    public function get(int $id): TransactionResponse
     {
         $payload = Payload::get('transactions/'.$id);
+
+        /** @var Response<array<string, mixed>> $response */
         $response = $this->transporter->request($payload);
 
-        return $response->data();
+        return TransactionResponse::from($response->data());
     }
 
     /**
@@ -97,17 +108,9 @@ final class Transactions implements TransactionsContract
      *
      * @see https://rmp-api.rik.ee/api.html#operation/post-transactions
      *
-     * @param array<string,mixed>|array{
-     *   "accounts_dimensions_id": int,
-     *   "type": "D"|"C",
-     *   "amount": float,
-     *   "cl_currencies_id": "EUR",
-     *   "date": "2015-01-31",
-     *   "description": string,
-     *   "clients_id": int,
-     * } $parameters
+     * @param  array<string, mixed>  $parameters
      */
-    public function create(array $parameters = []): mixed
+    public function create(array $parameters = []): ApiResponse
     {
         $missingRequiredParameters = array_diff_key(
             array_flip(
@@ -125,15 +128,17 @@ final class Transactions implements TransactionsContract
         if (count($missingRequiredParameters) !== 0) {
             $missingKeys = implode(', ', array_keys($missingRequiredParameters));
 
-            throw new \InvalidArgumentException(
+            throw new InvalidArgumentException(
                 "Missing required parameter(s): $missingKeys"
             );
         }
 
         $payload = Payload::post('transactions', $parameters);
+
+        /** @var Response<array{code: int, messages?: array<int, string>, created_object_id?: int|null}> $response */
         $response = $this->transporter->request($payload);
 
-        return $response->data();
+        return ApiResponse::from($response->data());
     }
 
     /**
@@ -142,17 +147,9 @@ final class Transactions implements TransactionsContract
      * @see https://rmp-api.rik.ee/api.html#operation/patch-transactions_one
      *
      * @param  int  $id  Transaction identificator.
-     * @param array<string,mixed>|array{
-     *   "accounts_dimensions_id": int,
-     *   "type": "D"|"C",
-     *   "amount": float,
-     *   "cl_currencies_id": "EUR",
-     *   "date": "2015-01-31",
-     *   "description": string,
-     *   "clients_id": int,
-     * } $parameters
+     * @param  array<string, mixed>  $parameters
      */
-    public function update(int $id, array $parameters): mixed
+    public function update(int $id, array $parameters): ApiResponse
     {
         $missingRequiredParameters = array_diff_key(
             array_flip(
@@ -170,15 +167,17 @@ final class Transactions implements TransactionsContract
         if (count($missingRequiredParameters) !== 0) {
             $missingKeys = implode(', ', array_keys($missingRequiredParameters));
 
-            throw new \InvalidArgumentException(
+            throw new InvalidArgumentException(
                 "Missing required parameter(s): $missingKeys"
             );
         }
 
         $payload = Payload::patch('transactions/'.$id, $parameters);
+
+        /** @var Response<array{code: int, messages?: array<int, string>, created_object_id?: int|null}> $response */
         $response = $this->transporter->request($payload);
 
-        return $response->data();
+        return ApiResponse::from($response->data());
     }
 
     /**
@@ -188,12 +187,14 @@ final class Transactions implements TransactionsContract
      *
      * @param  int  $id  Transaction identificator.
      */
-    public function delete(int $id): mixed
+    public function delete(int $id): ApiResponse
     {
         $payload = Payload::delete('transactions/'.$id);
+
+        /** @var Response<array{code: int, messages?: array<int, string>, created_object_id?: int|null}> $response */
         $response = $this->transporter->request($payload);
 
-        return $response->data();
+        return ApiResponse::from($response->data());
     }
 
     /**
@@ -204,12 +205,14 @@ final class Transactions implements TransactionsContract
      * @param  int  $id  Transaction identificator.
      * @param  array<int, mixed>  $distributions  Optional transaction distribution rows.
      */
-    public function register(int $id, array $distributions = []): mixed
+    public function register(int $id, array $distributions = []): ApiResponse
     {
         $payload = Payload::patch('transactions/'.$id.'/register', $distributions);
+
+        /** @var Response<array{code: int, messages?: array<int, string>, created_object_id?: int|null}> $response */
         $response = $this->transporter->request($payload);
 
-        return $response->data();
+        return ApiResponse::from($response->data());
     }
 
     /**
@@ -219,12 +222,14 @@ final class Transactions implements TransactionsContract
      *
      * @param  int  $id  Transaction identificator.
      */
-    public function invalidate(int $id): mixed
+    public function invalidate(int $id): ApiResponse
     {
         $payload = Payload::patch('transactions/'.$id.'/invalidate');
+
+        /** @var Response<array{code: int, messages?: array<int, string>, created_object_id?: int|null}> $response */
         $response = $this->transporter->request($payload);
 
-        return $response->data();
+        return ApiResponse::from($response->data());
     }
 
     /**
@@ -234,12 +239,14 @@ final class Transactions implements TransactionsContract
      *
      * @param  int  $id  Transaction identificator.
      */
-    public function getFile(int $id): mixed
+    public function getFile(int $id): ApiFileResponse
     {
         $payload = Payload::get('transactions/'.$id.'/document_user');
+
+        /** @var Response<array{name: string, contents: string}> $response */
         $response = $this->transporter->request($payload);
 
-        return $response->data();
+        return ApiFileResponse::from($response->data());
     }
 
     /**
@@ -248,12 +255,9 @@ final class Transactions implements TransactionsContract
      * @see https://rmp-api.rik.ee/api.html#operation/put-transactions_one_document_user
      *
      * @param  int  $id  Transaction identificator.
-     * @param array<string,mixed>|array{
-     *   "name": string,
-     *   "contents": string,
-     * } $parameters Base64-encoded file payload.
+     * @param  array<string, mixed>  $parameters  Base64-encoded file payload.
      */
-    public function updateFile(int $id, array $parameters): mixed
+    public function updateFile(int $id, array $parameters): ApiResponse
     {
         $missingRequiredParameters = array_diff_key(
             array_flip(
@@ -268,15 +272,17 @@ final class Transactions implements TransactionsContract
         if (count($missingRequiredParameters) !== 0) {
             $missingKeys = implode(', ', array_keys($missingRequiredParameters));
 
-            throw new \InvalidArgumentException(
+            throw new InvalidArgumentException(
                 "Missing required parameter(s): $missingKeys"
             );
         }
 
-        $payload = Payload::put('transactions/'.$id.'/document_user');
+        $payload = Payload::put('transactions/'.$id.'/document_user', $parameters);
+
+        /** @var Response<array{code: int, messages?: array<int, string>, created_object_id?: int|null}> $response */
         $response = $this->transporter->request($payload);
 
-        return $response->data();
+        return ApiResponse::from($response->data());
     }
 
     /**
@@ -286,11 +292,13 @@ final class Transactions implements TransactionsContract
      *
      * @param  int  $id  Transaction identificator.
      */
-    public function deleteFile(int $id): mixed
+    public function deleteFile(int $id): ApiResponse
     {
         $payload = Payload::delete('transactions/'.$id.'/document_user');
+
+        /** @var Response<array{code: int, messages?: array<int, string>, created_object_id?: int|null}> $response */
         $response = $this->transporter->request($payload);
 
-        return $response->data();
+        return ApiResponse::from($response->data());
     }
 }

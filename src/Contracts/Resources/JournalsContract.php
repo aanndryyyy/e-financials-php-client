@@ -5,6 +5,10 @@ declare(strict_types=1);
 namespace EFinancialsClient\Contracts\Resources;
 
 use DateTime;
+use EFinancialsClient\Responses\ApiFileResponse;
+use EFinancialsClient\Responses\ApiResponse;
+use EFinancialsClient\Responses\Journals\JournalResponse;
+use EFinancialsClient\Responses\Journals\ListResponse;
 
 interface JournalsContract
 {
@@ -18,7 +22,7 @@ interface JournalsContract
      * @param  DateTime|string  $startDate  Effective date on given date or later.
      * @param  DateTime|string  $endDate  Effective date on given date or before.
      */
-    public function all(int $page = 1, DateTime|string $modifiedSince = '', DateTime|string $startDate = '', DateTime|string $endDate = ''): mixed;
+    public function all(int $page = 1, DateTime|string $modifiedSince = '', DateTime|string $startDate = '', DateTime|string $endDate = ''): ListResponse;
 
     /**
      * Retrieve one specific journal entry of the specified company.
@@ -27,23 +31,16 @@ interface JournalsContract
      *
      * @param  int  $id  Journal entry identificator.
      */
-    public function get(int $id): mixed;
+    public function get(int $id): JournalResponse;
 
     /**
      * Create a new journal entry of the specified company.
      *
      * @see https://rmp-api.rik.ee/api.html#operation/post-journals
      *
-     * @param array<string,mixed>|array{
-     *   "effective_date": "2014-05-31",
-     *   "postings": array,
-     *   "title": string,
-     *   "clients_id": int,
-     *   "cl_currencies_id": "EUR",
-     *   "document_number": string,
-     * } $parameters
+     * @param  array<string, mixed>  $parameters
      */
-    public function create(array $parameters = []): mixed;
+    public function create(array $parameters = []): ApiResponse;
 
     /**
      * Modify one specific journal entry of the specified company.
@@ -51,16 +48,9 @@ interface JournalsContract
      * @see https://rmp-api.rik.ee/api.html#operation/patch-journals_one
      *
      * @param  int  $id  Journal entry identificator.
-     * @param array<string,mixed>|array{
-     *   "effective_date": "2014-05-31",
-     *   "postings": array,
-     *   "title": string,
-     *   "clients_id": int,
-     *   "cl_currencies_id": "EUR",
-     *   "document_number": string,
-     * } $parameters
+     * @param  array<string, mixed>  $parameters
      */
-    public function update(int $id, array $parameters): mixed;
+    public function update(int $id, array $parameters): ApiResponse;
 
     /**
      * Delete one specific journal entry of the specified company.
@@ -69,7 +59,7 @@ interface JournalsContract
      *
      * @param  int  $id  Journal entry identificator.
      */
-    public function delete(int $id): mixed;
+    public function delete(int $id): ApiResponse;
 
     /**
      * Register one specific journal entry of the specified company.
@@ -78,7 +68,7 @@ interface JournalsContract
      *
      * @param  int  $id  Journal entry identificator.
      */
-    public function register(int $id): mixed;
+    public function register(int $id): ApiResponse;
 
     /**
      * Invalidate one specific journal entry of the specified company.
@@ -87,7 +77,7 @@ interface JournalsContract
      *
      * @param  int  $id  Journal entry identificator.
      */
-    public function invalidate(int $id): mixed;
+    public function invalidate(int $id): ApiResponse;
 
     /**
      * Retrieve the document related to a journal entry of the specified company.
@@ -96,7 +86,7 @@ interface JournalsContract
      *
      * @param  int  $id  Journal entry identificator.
      */
-    public function getFile(int $id): mixed;
+    public function getFile(int $id): ApiFileResponse;
 
     /**
      * Update the document related to a journal entry of the specified company.
@@ -104,12 +94,9 @@ interface JournalsContract
      * @see https://rmp-api.rik.ee/api.html#operation/put-journals_one_document_user
      *
      * @param  int  $id  Journal entry identificator.
-     * @param array<string,mixed>|array{
-     *   "name": string,
-     *   "contents": string,
-     * } $parameters Base64-encoded file payload.
+     * @param  array<string, mixed>  $parameters  Base64-encoded file payload.
      */
-    public function updateFile(int $id, array $parameters): mixed;
+    public function updateFile(int $id, array $parameters): ApiResponse;
 
     /**
      * Delete the document related to a journal entry of the specified company.
@@ -118,5 +105,5 @@ interface JournalsContract
      *
      * @param  int  $id  Journal entry identificator.
      */
-    public function deleteFile(int $id): mixed;
+    public function deleteFile(int $id): ApiResponse;
 }

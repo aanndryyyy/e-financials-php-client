@@ -5,9 +5,16 @@ declare(strict_types=1);
 namespace EFinancialsClient\Resources;
 
 use DateTime;
+use DateTimeInterface;
 use EFinancialsClient\Contracts\Resources\JournalsContract;
 use EFinancialsClient\Resources\Concerns\Transportable;
+use EFinancialsClient\Responses\ApiFileResponse;
+use EFinancialsClient\Responses\ApiResponse;
+use EFinancialsClient\Responses\Journals\JournalResponse;
+use EFinancialsClient\Responses\Journals\ListResponse;
 use EFinancialsClient\ValueObjects\Transporter\Payload;
+use EFinancialsClient\ValueObjects\Transporter\Response;
+use InvalidArgumentException;
 
 final class Journals implements JournalsContract
 {
@@ -28,7 +35,7 @@ final class Journals implements JournalsContract
         DateTime|string $modifiedSince = '',
         DateTime|string $startDate = '',
         DateTime|string $endDate = '',
-    ): mixed {
+    ): ListResponse {
         $query = [];
 
         if ($page !== 1) {
@@ -37,7 +44,7 @@ final class Journals implements JournalsContract
 
         if ($modifiedSince !== '') {
             $query['modified_since'] = ($modifiedSince instanceof DateTime)
-                ? $modifiedSince->format(\DateTimeInterface::ATOM)
+                ? $modifiedSince->format(DateTimeInterface::ATOM)
                 : $modifiedSince;
         }
 
@@ -54,9 +61,11 @@ final class Journals implements JournalsContract
         }
 
         $payload = Payload::get('journals', $query);
+
+        /** @var Response<array{current_page: int, total_pages: int, items: array<int, array<string, mixed>>}> $response */
         $response = $this->transporter->request($payload);
 
-        return $response->data();
+        return ListResponse::from($response->data());
     }
 
     /**
@@ -66,12 +75,14 @@ final class Journals implements JournalsContract
      *
      * @param  int  $id  Journal entry identificator.
      */
-    public function get(int $id): mixed
+    public function get(int $id): JournalResponse
     {
         $payload = Payload::get('journals/'.$id);
+
+        /** @var Response<array<string, mixed>> $response */
         $response = $this->transporter->request($payload);
 
-        return $response->data();
+        return JournalResponse::from($response->data());
     }
 
     /**
@@ -79,16 +90,9 @@ final class Journals implements JournalsContract
      *
      * @see https://rmp-api.rik.ee/api.html#operation/post-journals
      *
-     * @param array<string,mixed>|array{
-     *   "effective_date": "2014-05-31",
-     *   "postings": array,
-     *   "title": string,
-     *   "clients_id": int,
-     *   "cl_currencies_id": "EUR",
-     *   "document_number": string,
-     * } $parameters
+     * @param  array<string, mixed>  $parameters
      */
-    public function create(array $parameters = []): mixed
+    public function create(array $parameters = []): ApiResponse
     {
         $missingRequiredParameters = array_diff_key(
             array_flip(
@@ -103,15 +107,17 @@ final class Journals implements JournalsContract
         if (count($missingRequiredParameters) !== 0) {
             $missingKeys = implode(', ', array_keys($missingRequiredParameters));
 
-            throw new \InvalidArgumentException(
+            throw new InvalidArgumentException(
                 "Missing required parameter(s): $missingKeys"
             );
         }
 
         $payload = Payload::post('journals', $parameters);
+
+        /** @var Response<array{code: int, messages?: array<int, string>, created_object_id?: int|null}> $response */
         $response = $this->transporter->request($payload);
 
-        return $response->data();
+        return ApiResponse::from($response->data());
     }
 
     /**
@@ -120,16 +126,9 @@ final class Journals implements JournalsContract
      * @see https://rmp-api.rik.ee/api.html#operation/patch-journals_one
      *
      * @param  int  $id  Journal entry identificator.
-     * @param array<string,mixed>|array{
-     *   "effective_date": "2014-05-31",
-     *   "postings": array,
-     *   "title": string,
-     *   "clients_id": int,
-     *   "cl_currencies_id": "EUR",
-     *   "document_number": string,
-     * } $parameters
+     * @param  array<string, mixed>  $parameters
      */
-    public function update(int $id, array $parameters): mixed
+    public function update(int $id, array $parameters): ApiResponse
     {
         $missingRequiredParameters = array_diff_key(
             array_flip(
@@ -144,15 +143,17 @@ final class Journals implements JournalsContract
         if (count($missingRequiredParameters) !== 0) {
             $missingKeys = implode(', ', array_keys($missingRequiredParameters));
 
-            throw new \InvalidArgumentException(
+            throw new InvalidArgumentException(
                 "Missing required parameter(s): $missingKeys"
             );
         }
 
         $payload = Payload::patch('journals/'.$id, $parameters);
+
+        /** @var Response<array{code: int, messages?: array<int, string>, created_object_id?: int|null}> $response */
         $response = $this->transporter->request($payload);
 
-        return $response->data();
+        return ApiResponse::from($response->data());
     }
 
     /**
@@ -162,12 +163,14 @@ final class Journals implements JournalsContract
      *
      * @param  int  $id  Journal entry identificator.
      */
-    public function delete(int $id): mixed
+    public function delete(int $id): ApiResponse
     {
         $payload = Payload::delete('journals/'.$id);
+
+        /** @var Response<array{code: int, messages?: array<int, string>, created_object_id?: int|null}> $response */
         $response = $this->transporter->request($payload);
 
-        return $response->data();
+        return ApiResponse::from($response->data());
     }
 
     /**
@@ -177,12 +180,14 @@ final class Journals implements JournalsContract
      *
      * @param  int  $id  Journal entry identificator.
      */
-    public function register(int $id): mixed
+    public function register(int $id): ApiResponse
     {
         $payload = Payload::patch('journals/'.$id.'/register');
+
+        /** @var Response<array{code: int, messages?: array<int, string>, created_object_id?: int|null}> $response */
         $response = $this->transporter->request($payload);
 
-        return $response->data();
+        return ApiResponse::from($response->data());
     }
 
     /**
@@ -192,12 +197,14 @@ final class Journals implements JournalsContract
      *
      * @param  int  $id  Journal entry identificator.
      */
-    public function invalidate(int $id): mixed
+    public function invalidate(int $id): ApiResponse
     {
         $payload = Payload::patch('journals/'.$id.'/invalidate');
+
+        /** @var Response<array{code: int, messages?: array<int, string>, created_object_id?: int|null}> $response */
         $response = $this->transporter->request($payload);
 
-        return $response->data();
+        return ApiResponse::from($response->data());
     }
 
     /**
@@ -207,12 +214,14 @@ final class Journals implements JournalsContract
      *
      * @param  int  $id  Journal entry identificator.
      */
-    public function getFile(int $id): mixed
+    public function getFile(int $id): ApiFileResponse
     {
         $payload = Payload::get('journals/'.$id.'/document_user');
+
+        /** @var Response<array{name: string, contents: string}> $response */
         $response = $this->transporter->request($payload);
 
-        return $response->data();
+        return ApiFileResponse::from($response->data());
     }
 
     /**
@@ -221,12 +230,9 @@ final class Journals implements JournalsContract
      * @see https://rmp-api.rik.ee/api.html#operation/put-journals_one_document_user
      *
      * @param  int  $id  Journal entry identificator.
-     * @param array<string,mixed>|array{
-     *   "name": string,
-     *   "contents": string,
-     * } $parameters Base64-encoded file payload.
+     * @param  array<string, mixed>  $parameters  Base64-encoded file payload.
      */
-    public function updateFile(int $id, array $parameters): mixed
+    public function updateFile(int $id, array $parameters): ApiResponse
     {
         $missingRequiredParameters = array_diff_key(
             array_flip(
@@ -241,15 +247,17 @@ final class Journals implements JournalsContract
         if (count($missingRequiredParameters) !== 0) {
             $missingKeys = implode(', ', array_keys($missingRequiredParameters));
 
-            throw new \InvalidArgumentException(
+            throw new InvalidArgumentException(
                 "Missing required parameter(s): $missingKeys"
             );
         }
 
-        $payload = Payload::put('journals/'.$id.'/document_user');
+        $payload = Payload::put('journals/'.$id.'/document_user', $parameters);
+
+        /** @var Response<array{code: int, messages?: array<int, string>, created_object_id?: int|null}> $response */
         $response = $this->transporter->request($payload);
 
-        return $response->data();
+        return ApiResponse::from($response->data());
     }
 
     /**
@@ -259,11 +267,13 @@ final class Journals implements JournalsContract
      *
      * @param  int  $id  Journal entry identificator.
      */
-    public function deleteFile(int $id): mixed
+    public function deleteFile(int $id): ApiResponse
     {
         $payload = Payload::delete('journals/'.$id.'/document_user');
+
+        /** @var Response<array{code: int, messages?: array<int, string>, created_object_id?: int|null}> $response */
         $response = $this->transporter->request($payload);
 
-        return $response->data();
+        return ApiResponse::from($response->data());
     }
 }

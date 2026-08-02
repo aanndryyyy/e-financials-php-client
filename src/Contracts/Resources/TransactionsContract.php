@@ -5,6 +5,10 @@ declare(strict_types=1);
 namespace EFinancialsClient\Contracts\Resources;
 
 use DateTime;
+use EFinancialsClient\Responses\ApiFileResponse;
+use EFinancialsClient\Responses\ApiResponse;
+use EFinancialsClient\Responses\Transactions\ListResponse;
+use EFinancialsClient\Responses\Transactions\TransactionResponse;
 
 interface TransactionsContract
 {
@@ -21,7 +25,7 @@ interface TransactionsContract
      * @param  string  $type  Object type.
      * @param  int|null  $clientsId  Customer identificator.
      */
-    public function all(int $page = 1, DateTime|string $modifiedSince = '', DateTime|string $startDate = '', DateTime|string $endDate = '', string $status = '', string $type = '', ?int $clientsId = null): mixed;
+    public function all(int $page = 1, DateTime|string $modifiedSince = '', DateTime|string $startDate = '', DateTime|string $endDate = '', string $status = '', string $type = '', ?int $clientsId = null): ListResponse;
 
     /**
      * Retrieve one specific transaction of the specified company.
@@ -30,24 +34,16 @@ interface TransactionsContract
      *
      * @param  int  $id  Transaction identificator.
      */
-    public function get(int $id): mixed;
+    public function get(int $id): TransactionResponse;
 
     /**
      * Create a new transaction of the specified company.
      *
      * @see https://rmp-api.rik.ee/api.html#operation/post-transactions
      *
-     * @param array<string,mixed>|array{
-     *   "accounts_dimensions_id": int,
-     *   "type": "D"|"C",
-     *   "amount": float,
-     *   "cl_currencies_id": "EUR",
-     *   "date": "2015-01-31",
-     *   "description": string,
-     *   "clients_id": int,
-     * } $parameters
+     * @param  array<string, mixed>  $parameters
      */
-    public function create(array $parameters = []): mixed;
+    public function create(array $parameters = []): ApiResponse;
 
     /**
      * Modify one specific transaction of the specified company.
@@ -55,17 +51,9 @@ interface TransactionsContract
      * @see https://rmp-api.rik.ee/api.html#operation/patch-transactions_one
      *
      * @param  int  $id  Transaction identificator.
-     * @param array<string,mixed>|array{
-     *   "accounts_dimensions_id": int,
-     *   "type": "D"|"C",
-     *   "amount": float,
-     *   "cl_currencies_id": "EUR",
-     *   "date": "2015-01-31",
-     *   "description": string,
-     *   "clients_id": int,
-     * } $parameters
+     * @param  array<string, mixed>  $parameters
      */
-    public function update(int $id, array $parameters): mixed;
+    public function update(int $id, array $parameters): ApiResponse;
 
     /**
      * Delete one specific transaction of the specified company.
@@ -74,7 +62,7 @@ interface TransactionsContract
      *
      * @param  int  $id  Transaction identificator.
      */
-    public function delete(int $id): mixed;
+    public function delete(int $id): ApiResponse;
 
     /**
      * Register one specific transaction of the specified company.
@@ -84,7 +72,7 @@ interface TransactionsContract
      * @param  int  $id  Transaction identificator.
      * @param  array<int, mixed>  $distributions  Optional transaction distribution rows.
      */
-    public function register(int $id, array $distributions = []): mixed;
+    public function register(int $id, array $distributions = []): ApiResponse;
 
     /**
      * Invalidate one specific transaction of the specified company.
@@ -93,7 +81,7 @@ interface TransactionsContract
      *
      * @param  int  $id  Transaction identificator.
      */
-    public function invalidate(int $id): mixed;
+    public function invalidate(int $id): ApiResponse;
 
     /**
      * Retrieve the document related to a transaction of the specified company.
@@ -102,7 +90,7 @@ interface TransactionsContract
      *
      * @param  int  $id  Transaction identificator.
      */
-    public function getFile(int $id): mixed;
+    public function getFile(int $id): ApiFileResponse;
 
     /**
      * Update the document related to a transaction of the specified company.
@@ -110,12 +98,9 @@ interface TransactionsContract
      * @see https://rmp-api.rik.ee/api.html#operation/put-transactions_one_document_user
      *
      * @param  int  $id  Transaction identificator.
-     * @param array<string,mixed>|array{
-     *   "name": string,
-     *   "contents": string,
-     * } $parameters Base64-encoded file payload.
+     * @param  array<string, mixed>  $parameters  Base64-encoded file payload.
      */
-    public function updateFile(int $id, array $parameters): mixed;
+    public function updateFile(int $id, array $parameters): ApiResponse;
 
     /**
      * Delete the document related to a transaction of the specified company.
@@ -124,5 +109,5 @@ interface TransactionsContract
      *
      * @param  int  $id  Transaction identificator.
      */
-    public function deleteFile(int $id): mixed;
+    public function deleteFile(int $id): ApiResponse;
 }

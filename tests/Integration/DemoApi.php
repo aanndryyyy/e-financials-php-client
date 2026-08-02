@@ -8,10 +8,12 @@ use EFinancialsClient\Responses\CostProfitCentres\ListResponse as CostProfitCent
 use EFinancialsClient\Responses\Currencies\ListResponse as CurrenciesListResponse;
 use EFinancialsClient\Responses\Invoices\InvoiceInfoResponse;
 use EFinancialsClient\Responses\Invoices\ListResponse as InvoicesListResponse;
+use EFinancialsClient\Responses\Journals\ListResponse as JournalsListResponse;
 use EFinancialsClient\Responses\Products\ListResponse as ProductsListResponse;
 use EFinancialsClient\Responses\PurchaseArticles\ListResponse as PurchaseArticlesListResponse;
 use EFinancialsClient\Responses\SalesArticles\ListResponse as SalesArticlesListResponse;
 use EFinancialsClient\Responses\Templates\ListResponse as TemplatesListResponse;
+use EFinancialsClient\Responses\Transactions\ListResponse as TransactionsListResponse;
 use EFinancialsClient\Responses\VatInfo\VatInfoResponse;
 
 $hasCredentials = is_string(getenv('E_FINANCIALS_API_KEY_ID') ?: null)
@@ -53,8 +55,8 @@ it('validates demo api response shapes', function () {
         ->and($client->purchaseArticles()->all())->toBeInstanceOf(PurchaseArticlesListResponse::class)
         ->and($client->invoices()->all())->toBeInstanceOf(InvoicesListResponse::class)
         ->and($client->invoices()->allSettings())->toBeInstanceOf(InvoiceInfoResponse::class)
-        ->and($client->journals()->all())->toBeArray()
-        ->and($client->transactions()->all())->toBeArray()
+        ->and($client->journals()->all())->toBeInstanceOf(JournalsListResponse::class)
+        ->and($client->transactions()->all())->toBeInstanceOf(TransactionsListResponse::class)
         ->and($client->salesInvoices()->all())->toBeArray()
         ->and($client->purchaseInvoices()->all())->toBeArray();
 })->skip(! $hasCredentials, 'Demo API credentials are not configured.');
