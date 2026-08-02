@@ -1,27 +1,18 @@
-# Copied from https://gist.github.com/avandrevitor/b917770334af3a43cf8c489f93287a84
+; This file is for unifying the coding style for different editors and IDEs.
+; More information at http://editorconfig.org
+
 root = true
 
-# All PHP files MUST use the Unix LF (linefeed) line ending.
-# Code MUST use an indent of 4 spaces, and MUST NOT use tabs for indenting.
-# All PHP files MUST end with a single blank line.
-# There MUST NOT be trailing whitespace at the end of non-blank lines.
 [*]
 charset = utf-8
 end_of_line = lf
 insert_final_newline = true
+indent_style = space
+indent_size = 4
 trim_trailing_whitespace = true
 
-# PHP-Files, Composer.json, MD-Files
-[{*.php,composer.json,*.md}]
-indent_style = space
-indent_size = 4
+[*.md]
+trim_trailing_whitespace = false
 
-# HTML-Files LESS-Files SASS-Files CSS-Files JS-Files JSON-Files
-[{*.html,*.less,*.sass,*.css,*.js,*.json}]
-indent_style = tab
-indent_size = 4
-
-# Gitlab-CI, Travis-CI
 [*.yml]
-indent_style = space
 indent_size = 2

@@ -11,15 +11,13 @@ class PurchaseInvoices extends AbstractAPI
      *
      * @see https://rmp-api.rik.ee/api.html#operation/get-purchase_invoices
      *
-     * @param int             $page Page of responses to return.
-     * @param DateTime|string $modifiedSince Return only objects modified since provided timestamp.
-     * @param DateTime|string $startDate Object created on given date or later.
-     * @param DateTime|string $endDate Object created on given date or before.
-     * @param string          $status Object status.
-     * @param string          $paymentStatus Object payment status.
-     * @param int|null        $clientsId Supplier identificator.
-     *
-     * @return mixed
+     * @param  int  $page  Page of responses to return.
+     * @param  DateTime|string  $modifiedSince  Return only objects modified since provided timestamp.
+     * @param  DateTime|string  $startDate  Object created on given date or later.
+     * @param  DateTime|string  $endDate  Object created on given date or before.
+     * @param  string  $status  Object status.
+     * @param  string  $paymentStatus  Object payment status.
+     * @param  int|null  $clientsId  Supplier identificator.
      */
     public function all(
         int $page = 1,
@@ -32,41 +30,41 @@ class PurchaseInvoices extends AbstractAPI
     ): mixed {
         $query = [];
 
-        if ( $page !== 1 ) {
+        if ($page !== 1) {
             $query['page'] = $page;
         }
 
-        if ( $modifiedSince !== '' ) {
-            $query['modified_since'] = ( $modifiedSince instanceof DateTime )
-                ? $modifiedSince->format( \DateTimeInterface::ATOM )
+        if ($modifiedSince !== '') {
+            $query['modified_since'] = ($modifiedSince instanceof DateTime)
+                ? $modifiedSince->format(\DateTimeInterface::ATOM)
                 : $modifiedSince;
         }
 
-        if ( $startDate !== '' ) {
-            $query['start_date'] = ( $startDate instanceof DateTime )
-                ? $startDate->format( 'Y-m-d' )
+        if ($startDate !== '') {
+            $query['start_date'] = ($startDate instanceof DateTime)
+                ? $startDate->format('Y-m-d')
                 : $startDate;
         }
 
-        if ( $endDate !== '' ) {
-            $query['end_date'] = ( $endDate instanceof DateTime )
-                ? $endDate->format( 'Y-m-d' )
+        if ($endDate !== '') {
+            $query['end_date'] = ($endDate instanceof DateTime)
+                ? $endDate->format('Y-m-d')
                 : $endDate;
         }
 
-        if ( $status !== '' ) {
+        if ($status !== '') {
             $query['status'] = $status;
         }
 
-        if ( $paymentStatus !== '' ) {
+        if ($paymentStatus !== '') {
             $query['payment_status'] = $paymentStatus;
         }
 
-        if ( $clientsId !== null ) {
+        if ($clientsId !== null) {
             $query['clients_id'] = $clientsId;
         }
 
-        $response = $this->client->request( 'GET', 'purchase_invoices', $query );
+        $response = $this->client->request('GET', 'purchase_invoices', $query);
 
         return $response;
     }
@@ -76,13 +74,11 @@ class PurchaseInvoices extends AbstractAPI
      *
      * @see https://rmp-api.rik.ee/api.html#operation/get-purchase_invoices_one
      *
-     * @param int $id Purchase invoice identificator.
-     *
-     * @return mixed
+     * @param  int  $id  Purchase invoice identificator.
      */
-    public function get( int $id ): mixed
+    public function get(int $id): mixed
     {
-        $response = $this->client->request( 'GET', 'purchase_invoices/' . $id );
+        $response = $this->client->request('GET', 'purchase_invoices/'.$id);
 
         return $response;
     }
@@ -101,10 +97,8 @@ class PurchaseInvoices extends AbstractAPI
      *   "term_days": 0,
      *   "cl_currencies_id": "EUR"
      * } $parameters
-     *
-     * @return mixed
      */
-    public function create( array $parameters = [] ): mixed
+    public function create(array $parameters = []): mixed
     {
         $missingRequiredParameters = array_diff_key(
             array_flip(
@@ -121,8 +115,8 @@ class PurchaseInvoices extends AbstractAPI
             $parameters
         );
 
-        if ( count( $missingRequiredParameters ) !== 0 ) {
-            $missingKeys = implode( ', ', array_keys( $missingRequiredParameters ) );
+        if (count($missingRequiredParameters) !== 0) {
+            $missingKeys = implode(', ', array_keys($missingRequiredParameters));
 
             throw new \InvalidArgumentException(
                 "Missing required parameter(s): $missingKeys"
@@ -144,7 +138,7 @@ class PurchaseInvoices extends AbstractAPI
      *
      * @see https://rmp-api.rik.ee/api.html#operation/patch-purchase_invoices_one
      *
-     * @param int $id Purchase invoice identificator.
+     * @param  int  $id  Purchase invoice identificator.
      * @param array<string,mixed>|array{
      *   "clients_id": 803,
      *   "client_name": string,
@@ -154,10 +148,8 @@ class PurchaseInvoices extends AbstractAPI
      *   "term_days": 0,
      *   "cl_currencies_id": "EUR"
      * } $parameters
-     *
-     * @return mixed
      */
-    public function update( int $id, array $parameters ): mixed
+    public function update(int $id, array $parameters): mixed
     {
         $missingRequiredParameters = array_diff_key(
             array_flip(
@@ -174,8 +166,8 @@ class PurchaseInvoices extends AbstractAPI
             $parameters
         );
 
-        if ( count( $missingRequiredParameters ) !== 0 ) {
-            $missingKeys = implode( ', ', array_keys( $missingRequiredParameters ) );
+        if (count($missingRequiredParameters) !== 0) {
+            $missingKeys = implode(', ', array_keys($missingRequiredParameters));
 
             throw new \InvalidArgumentException(
                 "Missing required parameter(s): $missingKeys"
@@ -184,7 +176,7 @@ class PurchaseInvoices extends AbstractAPI
 
         $response = $this->client->request(
             'PATCH',
-            'purchase_invoices/' . $id,
+            'purchase_invoices/'.$id,
             [],
             $parameters
         );
@@ -197,13 +189,11 @@ class PurchaseInvoices extends AbstractAPI
      *
      * @see https://rmp-api.rik.ee/api.html#operation/delete-purchase_invoices_one
      *
-     * @param int $id Purchase invoice identificator.
-     *
-     * @return mixed
+     * @param  int  $id  Purchase invoice identificator.
      */
-    public function delete( int $id ): mixed
+    public function delete(int $id): mixed
     {
-        $response = $this->client->request( 'DELETE', 'purchase_invoices/' . $id );
+        $response = $this->client->request('DELETE', 'purchase_invoices/'.$id);
 
         return $response;
     }
@@ -213,13 +203,11 @@ class PurchaseInvoices extends AbstractAPI
      *
      * @see https://rmp-api.rik.ee/api.html#operation/patch-purchase_invoices_one_register
      *
-     * @param int $id Purchase invoice identificator.
-     *
-     * @return mixed
+     * @param  int  $id  Purchase invoice identificator.
      */
-    public function register( int $id ): mixed
+    public function register(int $id): mixed
     {
-        $response = $this->client->request( 'PATCH', 'purchase_invoices/' . $id . '/register' );
+        $response = $this->client->request('PATCH', 'purchase_invoices/'.$id.'/register');
 
         return $response;
     }
@@ -229,13 +217,11 @@ class PurchaseInvoices extends AbstractAPI
      *
      * @see https://rmp-api.rik.ee/api.html#operation/patch-purchase_invoices_one_invalidate
      *
-     * @param int $id Purchase invoice identificator.
-     *
-     * @return mixed
+     * @param  int  $id  Purchase invoice identificator.
      */
-    public function invalidate( int $id ): mixed
+    public function invalidate(int $id): mixed
     {
-        $response = $this->client->request( 'PATCH', 'purchase_invoices/' . $id . '/invalidate' );
+        $response = $this->client->request('PATCH', 'purchase_invoices/'.$id.'/invalidate');
 
         return $response;
     }
@@ -245,13 +231,11 @@ class PurchaseInvoices extends AbstractAPI
      *
      * @see https://rmp-api.rik.ee/api.html#operation/get-purchase_invoices_one_document_user
      *
-     * @param int $id Purchase invoice identificator.
-     *
-     * @return mixed
+     * @param  int  $id  Purchase invoice identificator.
      */
-    public function getFile( int $id ): mixed
+    public function getFile(int $id): mixed
     {
-        $response = $this->client->request( 'GET', 'purchase_invoices/' . $id . '/document_user' );
+        $response = $this->client->request('GET', 'purchase_invoices/'.$id.'/document_user');
 
         return $response;
     }
@@ -261,15 +245,13 @@ class PurchaseInvoices extends AbstractAPI
      *
      * @see https://rmp-api.rik.ee/api.html#operation/put-purchase_invoices_one_document_user
      *
-     * @param int $id Purchase invoice identificator.
+     * @param  int  $id  Purchase invoice identificator.
      * @param array<string,mixed>|array{
      *   "name": string,
      *   "contents": string,
      * } $parameters Base64-encoded file payload.
-     *
-     * @return mixed
      */
-    public function updateFile( int $id, array $parameters ): mixed
+    public function updateFile(int $id, array $parameters): mixed
     {
         $missingRequiredParameters = array_diff_key(
             array_flip(
@@ -281,8 +263,8 @@ class PurchaseInvoices extends AbstractAPI
             $parameters
         );
 
-        if ( count( $missingRequiredParameters ) !== 0 ) {
-            $missingKeys = implode( ', ', array_keys( $missingRequiredParameters ) );
+        if (count($missingRequiredParameters) !== 0) {
+            $missingKeys = implode(', ', array_keys($missingRequiredParameters));
 
             throw new \InvalidArgumentException(
                 "Missing required parameter(s): $missingKeys"
@@ -291,7 +273,7 @@ class PurchaseInvoices extends AbstractAPI
 
         $response = $this->client->request(
             'PUT',
-            'purchase_invoices/' . $id . '/document_user',
+            'purchase_invoices/'.$id.'/document_user',
             [],
             $parameters
         );
@@ -304,13 +286,11 @@ class PurchaseInvoices extends AbstractAPI
      *
      * @see https://rmp-api.rik.ee/api.html#operation/delete-purchase_invoices_one_document_user
      *
-     * @param int $id Purchase invoice identificator.
-     *
-     * @return mixed
+     * @param  int  $id  Purchase invoice identificator.
      */
-    public function deleteFile( int $id ): mixed
+    public function deleteFile(int $id): mixed
     {
-        $response = $this->client->request( 'DELETE', 'purchase_invoices/' . $id . '/document_user' );
+        $response = $this->client->request('DELETE', 'purchase_invoices/'.$id.'/document_user');
 
         return $response;
     }

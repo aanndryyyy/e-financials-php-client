@@ -11,28 +11,26 @@ class Clients extends AbstractAPI
      *
      * @see https://rmp-api.rik.ee/api.html#operation/get-clients
      *
-     * @param int             $page Page of responses to return.
-     * @param DateTime|string $modifiedSince Return only objects modified since provided timestamp.
-     *
-     * @return mixed
+     * @param  int  $page  Page of responses to return.
+     * @param  DateTime|string  $modifiedSince  Return only objects modified since provided timestamp.
      */
     public function all(int $page = 1, DateTime|string $modifiedSince = ''): mixed
     {
         $query = [];
 
-        if ( $page !== 1 ) {
+        if ($page !== 1) {
             $query['page'] = $page;
         }
 
-        if ( $modifiedSince !== '' ) {
+        if ($modifiedSince !== '') {
             // If $modifiedSince is a DateTime object, format it as an Atom string
             // Otherwise, assign keep it as date string.
             $query['modified_since'] = ($modifiedSince instanceof DateTime)
-                ? $modifiedSince->format( \DateTimeInterface::ATOM )
+                ? $modifiedSince->format(\DateTimeInterface::ATOM)
                 : $modifiedSince;
         }
 
-        $response = $this->client->request( 'GET', 'clients', $query );
+        $response = $this->client->request('GET', 'clients', $query);
 
         return $response;
     }
@@ -42,27 +40,24 @@ class Clients extends AbstractAPI
      *
      * @see https://rmp-api.rik.ee/api.html#operation/get-clients_one
      *
-     * @param int $id Client identificator.
-     *
-     * @return mixed
+     * @param  int  $id  Client identificator.
      */
-    public function get( int $id ): mixed
+    public function get(int $id): mixed
     {
-        $response = $this->client->request( 'GET', 'clients/' . $id );
+        $response = $this->client->request('GET', 'clients/'.$id);
 
         return $response;
     }
 
     /**
-    * Create a new client of the specified company.
-    *
-    * @see https://rmp-api.rik.ee/api.html#operation/post-clients
-    *
-    * @param array<string, mixed> $parameters all request parameters.
-    *
-    * @return mixed
-    */
-    public function create( array $parameters = [] ): mixed {
+     * Create a new client of the specified company.
+     *
+     * @see https://rmp-api.rik.ee/api.html#operation/post-clients
+     *
+     * @param  array<string, mixed>  $parameters  all request parameters.
+     */
+    public function create(array $parameters = []): mixed
+    {
 
         $missingParameters = array_diff_key(
             array_flip(
@@ -79,14 +74,13 @@ class Clients extends AbstractAPI
             $parameters
         );
 
-        if ( count( $missingParameters ) !== 0 ) {
-            $missingKeys = implode( ', ', array_keys( $missingParameters ) );
+        if (count($missingParameters) !== 0) {
+            $missingKeys = implode(', ', array_keys($missingParameters));
 
             throw new \InvalidArgumentException(
                 "Missing required parameter(s): $missingKeys"
             );
         }
-
 
         $response = $this->client->request(
             'POST',
@@ -99,15 +93,14 @@ class Clients extends AbstractAPI
     }
 
     /**
-    * Modify one specific client.
-    *
-    * @see https://rmp-api.rik.ee/api.html#operation/patch-clients_one
-    *
-    * @param array<string, mixed> $parameters all request parameters.
-    *
-    * @return mixed
-    */
-    public function update( int $id, array $parameters ): mixed {
+     * Modify one specific client.
+     *
+     * @see https://rmp-api.rik.ee/api.html#operation/patch-clients_one
+     *
+     * @param  array<string, mixed>  $parameters  all request parameters.
+     */
+    public function update(int $id, array $parameters): mixed
+    {
 
         $missingParameters = array_diff_key(
             array_flip(
@@ -124,8 +117,8 @@ class Clients extends AbstractAPI
             $parameters
         );
 
-        if ( count( $missingParameters ) !== 0 ) {
-            $missingKeys = implode( ', ', array_keys( $missingParameters ) );
+        if (count($missingParameters) !== 0) {
+            $missingKeys = implode(', ', array_keys($missingParameters));
 
             throw new \InvalidArgumentException(
                 "Missing required parameter(s): $missingKeys"
@@ -134,7 +127,7 @@ class Clients extends AbstractAPI
 
         $response = $this->client->request(
             'PATCH',
-            'clients/' . $id,
+            'clients/'.$id,
             [],
             $parameters
         );
@@ -142,18 +135,16 @@ class Clients extends AbstractAPI
         return $response;
     }
 
-     /**
+    /**
      * Delete one specific Client.
      *
      * @see https://rmp-api.rik.ee/api.html#operation/delete-clients_one
      *
-     * @param int $id Client identificator.
-     *
-     * @return mixed
+     * @param  int  $id  Client identificator.
      */
-    public function delete( int $id ): mixed
+    public function delete(int $id): mixed
     {
-        $response = $this->client->request( 'DELETE', 'clients/' . $id );
+        $response = $this->client->request('DELETE', 'clients/'.$id);
 
         return $response;
     }
@@ -163,11 +154,11 @@ class Clients extends AbstractAPI
      *
      * @see https://rmp-api.rik.ee/api.html#operation/patch-clients_one_deactivate
      *
-     * @param int $id Client identificator.
+     * @param  int  $id  Client identificator.
      */
-    public function deactivate( int $id ): mixed
+    public function deactivate(int $id): mixed
     {
-        $response = $this->client->request( 'PATCH', 'clients/' . $id . '/deactivate' );
+        $response = $this->client->request('PATCH', 'clients/'.$id.'/deactivate');
 
         return $response;
     }
@@ -177,11 +168,11 @@ class Clients extends AbstractAPI
      *
      * @see https://rmp-api.rik.ee/api.html#operation/patch-clients_one_reactivate
      *
-     * @param int $id Client identificator.
+     * @param  int  $id  Client identificator.
      */
-    public function reactivate( int $id ): mixed
+    public function reactivate(int $id): mixed
     {
-        $response = $this->client->request( 'PATCH', 'clients/' . $id . '/reactivate' );
+        $response = $this->client->request('PATCH', 'clients/'.$id.'/reactivate');
 
         return $response;
     }

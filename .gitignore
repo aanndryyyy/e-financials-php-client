@@ -1,7 +1,12 @@
-.DS_Store
+/.phpunit.cache
+/.php-cs-fixer.cache
+/.php-cs-fixer.php
+/composer.lock
+/phpunit.xml
+/vendor/
+*.swp
+*.swo
 .idea
 .vscode
-composer.lock
-/vendor/
-/vendor-bin/**/vendor/
+.DS_Store
 *.log
