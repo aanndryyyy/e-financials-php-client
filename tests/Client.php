@@ -25,6 +25,9 @@ use EFinancialsClient\Responses\Journals\ListResponse as JournalsListResponse;
 use EFinancialsClient\Responses\Journals\PostingResponse;
 use EFinancialsClient\Responses\Products\ListResponse as ProductsListResponse;
 use EFinancialsClient\Responses\Products\ProductResponse;
+use EFinancialsClient\Responses\PurchaseInvoices\ListResponse as PurchaseInvoicesListResponse;
+use EFinancialsClient\Responses\PurchaseInvoices\PurchaseInvoiceItemResponse;
+use EFinancialsClient\Responses\PurchaseInvoices\PurchaseInvoiceResponse;
 use EFinancialsClient\Responses\Transactions\ListResponse as TransactionsListResponse;
 use EFinancialsClient\Responses\Transactions\TransactionResponse;
 use EFinancialsClient\Testing\ClientFake;
@@ -35,6 +38,7 @@ use EFinancialsClient\Testing\Responses\Fixtures\Invoices\InvoiceInfoResponseFix
 use EFinancialsClient\Testing\Responses\Fixtures\Invoices\InvoiceSeriesResponseFixture;
 use EFinancialsClient\Testing\Responses\Fixtures\Journals\JournalResponseFixture;
 use EFinancialsClient\Testing\Responses\Fixtures\Products\ProductResponseFixture;
+use EFinancialsClient\Testing\Responses\Fixtures\PurchaseInvoices\PurchaseInvoiceResponseFixture;
 use EFinancialsClient\Testing\Responses\Fixtures\Transactions\TransactionResponseFixture;
 use EFinancialsClient\Transporters\HttpTransporter;
 use EFinancialsClient\ValueObjects\ApiCredentials;
@@ -338,6 +342,42 @@ it('maps transactions to a fuller OpenAPI projection', function () {
 
     $fake->assertSent('transactions', fn (Payload $payload): bool => $payload->method()->value === 'GET');
     $fake->assertSent('transactions/2672', fn (Payload $payload): bool => $payload->method()->value === 'GET');
+});
+
+it('maps purchase invoices to a fuller OpenAPI projection', function () {
+    $fake = new ClientFake([
+        PurchaseInvoicesListResponse::fake(),
+        PurchaseInvoiceResponse::fake(),
+    ]);
+
+    $list = $fake->purchaseInvoices()->all();
+
+    expect($list)->toBeInstanceOf(PurchaseInvoicesListResponse::class)
+        ->and($list->items)->toHaveCount(1)
+        ->and($list->items[0])->toBeInstanceOf(PurchaseInvoiceResponse::class)
+        ->and($list->items[0]->id)->toBe(1983)
+        ->and($list->items[0]->clientName)->toBe('Aktsiaselts Kaupmees & Ko')
+        ->and($list->items[0]->number)->toBe('234234')
+        ->and($list->items[0]->status)->toBe('CONFIRMED')
+        ->and($list->items[0]->paymentStatus)->toBe('PAID')
+        ->and($list->items[0]->items)->toHaveCount(1)
+        ->and($list->items[0]->items[0])->toBeInstanceOf(PurchaseInvoiceItemResponse::class)
+        ->and($list->items[0]->items[0]->customTitle)->toBe('Office supplies')
+        ->and($list->items[0]->toArray())->toBe(
+            PurchaseInvoiceResponse::from(PurchaseInvoiceResponseFixture::ATTRIBUTES)->toArray()
+        );
+
+    $invoice = $fake->purchaseInvoices()->get(1983);
+
+    expect($invoice)->toBeInstanceOf(PurchaseInvoiceResponse::class)
+        ->and($invoice->liabilityAccountsId)->toBe(2310)
+        ->and($invoice->clCurrenciesId)->toBe('EUR')
+        ->and($invoice->journals)->toBe([])
+        ->and($invoice->settlements)->toBe([])
+        ->and($invoice->transactions)->toBe([]);
+
+    $fake->assertSent('purchase_invoices', fn (Payload $payload): bool => $payload->method()->value === 'GET');
+    $fake->assertSent('purchase_invoices/1983', fn (Payload $payload): bool => $payload->method()->value === 'GET');
 });
 
 it('builds a client through the factory facade', function () {

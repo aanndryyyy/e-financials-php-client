@@ -117,6 +117,30 @@ trait NormalizesAttributes
     }
 
     /**
+     * @return array<int, int>
+     */
+    private static function intList(mixed $value): array
+    {
+        if (! is_array($value)) {
+            return [];
+        }
+
+        $list = [];
+
+        foreach ($value as $item) {
+            $int = self::intOrNull($item);
+
+            if ($int === null) {
+                continue;
+            }
+
+            $list[] = $int;
+        }
+
+        return $list;
+    }
+
+    /**
      * @return array<string, string>
      */
     private static function stringMap(mixed $value): array

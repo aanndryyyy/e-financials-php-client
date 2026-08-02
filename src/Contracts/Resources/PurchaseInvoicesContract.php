@@ -5,6 +5,10 @@ declare(strict_types=1);
 namespace EFinancialsClient\Contracts\Resources;
 
 use DateTime;
+use EFinancialsClient\Responses\ApiFileResponse;
+use EFinancialsClient\Responses\ApiResponse;
+use EFinancialsClient\Responses\PurchaseInvoices\ListResponse;
+use EFinancialsClient\Responses\PurchaseInvoices\PurchaseInvoiceResponse;
 
 interface PurchaseInvoicesContract
 {
@@ -21,7 +25,7 @@ interface PurchaseInvoicesContract
      * @param  string  $paymentStatus  Object payment status.
      * @param  int|null  $clientsId  Supplier identificator.
      */
-    public function all(int $page = 1, DateTime|string $modifiedSince = '', DateTime|string $startDate = '', DateTime|string $endDate = '', string $status = '', string $paymentStatus = '', ?int $clientsId = null): mixed;
+    public function all(int $page = 1, DateTime|string $modifiedSince = '', DateTime|string $startDate = '', DateTime|string $endDate = '', string $status = '', string $paymentStatus = '', ?int $clientsId = null): ListResponse;
 
     /**
      * Retrieve one specific purchase invoice of the specified company.
@@ -30,24 +34,16 @@ interface PurchaseInvoicesContract
      *
      * @param  int  $id  Purchase invoice identificator.
      */
-    public function get(int $id): mixed;
+    public function get(int $id): PurchaseInvoiceResponse;
 
     /**
      * Create a new purchase invoice of the specified company.
      *
      * @see https://rmp-api.rik.ee/api.html#operation/post-purchase_invoices
      *
-     * @param array<string,mixed>|array{
-     *   "clients_id": 803,
-     *   "client_name": string,
-     *   "number": string,
-     *   "create_date": "2017-08-09",
-     *   "journal_date": "2017-08-09",
-     *   "term_days": 0,
-     *   "cl_currencies_id": "EUR"
-     * } $parameters
+     * @param  array<string, mixed>  $parameters
      */
-    public function create(array $parameters = []): mixed;
+    public function create(array $parameters = []): ApiResponse;
 
     /**
      * Modify one specific purchase invoice of the specified company.
@@ -55,17 +51,9 @@ interface PurchaseInvoicesContract
      * @see https://rmp-api.rik.ee/api.html#operation/patch-purchase_invoices_one
      *
      * @param  int  $id  Purchase invoice identificator.
-     * @param array<string,mixed>|array{
-     *   "clients_id": 803,
-     *   "client_name": string,
-     *   "number": string,
-     *   "create_date": "2017-08-09",
-     *   "journal_date": "2017-08-09",
-     *   "term_days": 0,
-     *   "cl_currencies_id": "EUR"
-     * } $parameters
+     * @param  array<string, mixed>  $parameters
      */
-    public function update(int $id, array $parameters): mixed;
+    public function update(int $id, array $parameters): ApiResponse;
 
     /**
      * Delete one specific purchase invoice of the specified company.
@@ -74,7 +62,7 @@ interface PurchaseInvoicesContract
      *
      * @param  int  $id  Purchase invoice identificator.
      */
-    public function delete(int $id): mixed;
+    public function delete(int $id): ApiResponse;
 
     /**
      * Register one specific purchase invoice of the specified company.
@@ -83,7 +71,7 @@ interface PurchaseInvoicesContract
      *
      * @param  int  $id  Purchase invoice identificator.
      */
-    public function register(int $id): mixed;
+    public function register(int $id): ApiResponse;
 
     /**
      * Invalidate one specific purchase invoice of the specified company.
@@ -92,7 +80,7 @@ interface PurchaseInvoicesContract
      *
      * @param  int  $id  Purchase invoice identificator.
      */
-    public function invalidate(int $id): mixed;
+    public function invalidate(int $id): ApiResponse;
 
     /**
      * Retrieve the user-uploaded document related to a purchase invoice.
@@ -101,7 +89,7 @@ interface PurchaseInvoicesContract
      *
      * @param  int  $id  Purchase invoice identificator.
      */
-    public function getFile(int $id): mixed;
+    public function getFile(int $id): ApiFileResponse;
 
     /**
      * Update the user-uploaded document related to a purchase invoice.
@@ -109,12 +97,9 @@ interface PurchaseInvoicesContract
      * @see https://rmp-api.rik.ee/api.html#operation/put-purchase_invoices_one_document_user
      *
      * @param  int  $id  Purchase invoice identificator.
-     * @param array<string,mixed>|array{
-     *   "name": string,
-     *   "contents": string,
-     * } $parameters Base64-encoded file payload.
+     * @param  array<string, mixed>  $parameters  Base64-encoded file payload.
      */
-    public function updateFile(int $id, array $parameters): mixed;
+    public function updateFile(int $id, array $parameters): ApiResponse;
 
     /**
      * Delete the user-uploaded document related to a purchase invoice.
@@ -123,5 +108,5 @@ interface PurchaseInvoicesContract
      *
      * @param  int  $id  Purchase invoice identificator.
      */
-    public function deleteFile(int $id): mixed;
+    public function deleteFile(int $id): ApiResponse;
 }
