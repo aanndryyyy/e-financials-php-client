@@ -28,6 +28,11 @@ use EFinancialsClient\Responses\Products\ProductResponse;
 use EFinancialsClient\Responses\PurchaseInvoices\ListResponse as PurchaseInvoicesListResponse;
 use EFinancialsClient\Responses\PurchaseInvoices\PurchaseInvoiceItemResponse;
 use EFinancialsClient\Responses\PurchaseInvoices\PurchaseInvoiceResponse;
+use EFinancialsClient\Responses\SalesInvoices\ListResponse as SalesInvoicesListResponse;
+use EFinancialsClient\Responses\SalesInvoices\SaleInvoiceDeliveryOptionsResponse;
+use EFinancialsClient\Responses\SalesInvoices\SaleInvoiceDeliveryResponse;
+use EFinancialsClient\Responses\SalesInvoices\SaleInvoiceItemResponse;
+use EFinancialsClient\Responses\SalesInvoices\SaleInvoiceResponse;
 use EFinancialsClient\Responses\Transactions\ListResponse as TransactionsListResponse;
 use EFinancialsClient\Responses\Transactions\TransactionResponse;
 use EFinancialsClient\Testing\ClientFake;
@@ -39,6 +44,8 @@ use EFinancialsClient\Testing\Responses\Fixtures\Invoices\InvoiceSeriesResponseF
 use EFinancialsClient\Testing\Responses\Fixtures\Journals\JournalResponseFixture;
 use EFinancialsClient\Testing\Responses\Fixtures\Products\ProductResponseFixture;
 use EFinancialsClient\Testing\Responses\Fixtures\PurchaseInvoices\PurchaseInvoiceResponseFixture;
+use EFinancialsClient\Testing\Responses\Fixtures\SalesInvoices\SaleInvoiceDeliveryOptionsResponseFixture;
+use EFinancialsClient\Testing\Responses\Fixtures\SalesInvoices\SaleInvoiceResponseFixture;
 use EFinancialsClient\Testing\Responses\Fixtures\Transactions\TransactionResponseFixture;
 use EFinancialsClient\Transporters\HttpTransporter;
 use EFinancialsClient\ValueObjects\ApiCredentials;
@@ -73,9 +80,9 @@ it('returns decoded json from a successful request', function () {
         ApiCredentials::from('key-id', 'public-key', 'secret'),
     );
 
-    $client = new Client($transporter);
+    $response = $transporter->request(Payload::get('clients'));
 
-    expect($client->salesInvoices()->all())->toBe(['ok' => true]);
+    expect($response->data())->toBe(['ok' => true]);
 });
 
 it('throws a typed exception for http errors', function () {
@@ -88,8 +95,7 @@ it('throws a typed exception for http errors', function () {
         ApiCredentials::from('key-id', 'public-key', 'secret'),
     );
 
-    $client = new Client($transporter);
-    $client->salesInvoices()->all();
+    $transporter->request(Payload::get('clients'));
 })->throws(ErrorException::class, 'Unauthorized');
 
 it('exposes resource accessors', function () {
@@ -378,6 +384,54 @@ it('maps purchase invoices to a fuller OpenAPI projection', function () {
 
     $fake->assertSent('purchase_invoices', fn (Payload $payload): bool => $payload->method()->value === 'GET');
     $fake->assertSent('purchase_invoices/1983', fn (Payload $payload): bool => $payload->method()->value === 'GET');
+});
+
+it('maps sales invoices to a fuller OpenAPI projection', function () {
+    $fake = new ClientFake([
+        SalesInvoicesListResponse::fake(),
+        SaleInvoiceResponse::fake(),
+        SaleInvoiceDeliveryOptionsResponse::fake(),
+    ]);
+
+    $list = $fake->salesInvoices()->all();
+
+    expect($list)->toBeInstanceOf(SalesInvoicesListResponse::class)
+        ->and($list->items)->toHaveCount(1)
+        ->and($list->items[0])->toBeInstanceOf(SaleInvoiceResponse::class)
+        ->and($list->items[0]->id)->toBe(1698)
+        ->and($list->items[0]->number)->toBe('NX91')
+        ->and($list->items[0]->clientName)->toBe('PAypal')
+        ->and($list->items[0]->grossPrice)->toBe(48729.6)
+        ->and($list->items[0]->status)->toBe('CONFIRMED')
+        ->and($list->items[0]->items)->toHaveCount(1)
+        ->and($list->items[0]->items[0])->toBeInstanceOf(SaleInvoiceItemResponse::class)
+        ->and($list->items[0]->items[0]->customTitle)->toBe('Consulting')
+        ->and($list->items[0]->deliveries)->toHaveCount(1)
+        ->and($list->items[0]->deliveries[0])->toBeInstanceOf(SaleInvoiceDeliveryResponse::class)
+        ->and($list->items[0]->toArray())->toBe(
+            SaleInvoiceResponse::from(SaleInvoiceResponseFixture::ATTRIBUTES)->toArray()
+        );
+
+    $invoice = $fake->salesInvoices()->get(1698);
+
+    expect($invoice)->toBeInstanceOf(SaleInvoiceResponse::class)
+        ->and($invoice->bankRefNumber)->toBe('116758')
+        ->and($invoice->receivableAccountsId)->toBe(1210)
+        ->and($invoice->bankAccountsId)->toBeNull()
+        ->and($invoice->triangulationSellerInvoiceVatNo)->toBeNull();
+
+    $options = $fake->salesInvoices()->getDeliveryOptions(1698);
+
+    expect($options)->toBeInstanceOf(SaleInvoiceDeliveryOptionsResponse::class)
+        ->and($options->canSendEmail)->toBeTrue()
+        ->and($options->canSendEinvoice)->toBeFalse()
+        ->and($options->toArray())->toBe(
+            SaleInvoiceDeliveryOptionsResponse::from(SaleInvoiceDeliveryOptionsResponseFixture::ATTRIBUTES)->toArray()
+        );
+
+    $fake->assertSent('sale_invoices', fn (Payload $payload): bool => $payload->method()->value === 'GET');
+    $fake->assertSent('sale_invoices/1698', fn (Payload $payload): bool => $payload->method()->value === 'GET');
+    $fake->assertSent('sale_invoices/1698/delivery_options', fn (Payload $payload): bool => $payload->method()->value === 'GET');
 });
 
 it('builds a client through the factory facade', function () {

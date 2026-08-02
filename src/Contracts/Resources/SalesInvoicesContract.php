@@ -5,6 +5,11 @@ declare(strict_types=1);
 namespace EFinancialsClient\Contracts\Resources;
 
 use DateTime;
+use EFinancialsClient\Responses\ApiFileResponse;
+use EFinancialsClient\Responses\ApiResponse;
+use EFinancialsClient\Responses\SalesInvoices\ListResponse;
+use EFinancialsClient\Responses\SalesInvoices\SaleInvoiceDeliveryOptionsResponse;
+use EFinancialsClient\Responses\SalesInvoices\SaleInvoiceResponse;
 
 interface SalesInvoicesContract
 {
@@ -21,7 +26,7 @@ interface SalesInvoicesContract
      * @param  string  $paymentStatus  Object payment status.
      * @param  int|null  $clientsId  Customer identificator.
      */
-    public function all(int $page = 1, DateTime|string $modifiedSince = '', DateTime|string $startDate = '', DateTime|string $endDate = '', string $status = '', string $paymentStatus = '', ?int $clientsId = null): mixed;
+    public function all(int $page = 1, DateTime|string $modifiedSince = '', DateTime|string $startDate = '', DateTime|string $endDate = '', string $status = '', string $paymentStatus = '', ?int $clientsId = null): ListResponse;
 
     /**
      * Retrieve one specific sale invoice of the specified company.
@@ -30,27 +35,16 @@ interface SalesInvoicesContract
      *
      * @param  int  $id  Sale invoice identificator.
      */
-    public function get(int $id): mixed;
+    public function get(int $id): SaleInvoiceResponse;
 
     /**
      * Create a new sale invoice of the specified company.
      *
      * @see https://rmp-api.rik.ee/api.html#operation/post-sale_invoices
      *
-     * @param array<string,mixed>|array{
-     *   "sale_invoice_type": "INVOICE",
-     *   "cl_templates_id": 1,
-     *   "clients_id": 126,
-     *   "cl_countries_id": "EST",
-     *   "number_suffix": "91",
-     *   "create_date": "2016-02-15",
-     *   "journal_date": "2016-02-15",
-     *   "term_days": 30,
-     *   "cl_currencies_id": "EUR",
-     *   "show_client_balance": false
-     * } $parameters
+     * @param  array<string, mixed>  $parameters
      */
-    public function create(array $parameters = []): mixed;
+    public function create(array $parameters = []): ApiResponse;
 
     /**
      * Modify one specific sale invoice of the specified company.
@@ -58,20 +52,9 @@ interface SalesInvoicesContract
      * @see https://rmp-api.rik.ee/api.html#operation/patch-sale_invoices_one
      *
      * @param  int  $id  Sale invoice identificator.
-     * @param array<string,mixed>|array{
-     *   "sale_invoice_type": "INVOICE",
-     *   "cl_templates_id": 1,
-     *   "clients_id": 126,
-     *   "cl_countries_id": "EST",
-     *   "number_suffix": "91",
-     *   "create_date": "2016-02-15",
-     *   "journal_date": "2016-02-15",
-     *   "term_days": 30,
-     *   "cl_currencies_id": "EUR",
-     *   "show_client_balance": false
-     * } $parameters
+     * @param  array<string, mixed>  $parameters
      */
-    public function update(int $id, array $parameters): mixed;
+    public function update(int $id, array $parameters): ApiResponse;
 
     /**
      * Delete one specific sale invoice of the specified company.
@@ -80,7 +63,7 @@ interface SalesInvoicesContract
      *
      * @param  int  $id  Sale invoice identificator.
      */
-    public function delete(int $id): mixed;
+    public function delete(int $id): ApiResponse;
 
     /**
      * Register one specific sale invoice of the specified company.
@@ -89,7 +72,7 @@ interface SalesInvoicesContract
      *
      * @param  int  $id  Sale invoice identificator.
      */
-    public function register(int $id): mixed;
+    public function register(int $id): ApiResponse;
 
     /**
      * Invalidate one specific sale invoice of the specified company.
@@ -98,7 +81,7 @@ interface SalesInvoicesContract
      *
      * @param  int  $id  Sale invoice identificator.
      */
-    public function invalidate(int $id): mixed;
+    public function invalidate(int $id): ApiResponse;
 
     /**
      * Retrieve the system-generated XML e-invoice related to a sale invoice.
@@ -107,7 +90,7 @@ interface SalesInvoicesContract
      *
      * @param  int  $id  Sale invoice identificator.
      */
-    public function getXml(int $id): mixed;
+    public function getXml(int $id): ApiFileResponse;
 
     /**
      * Retrieve the system-generated PDF related to a sale invoice.
@@ -116,7 +99,7 @@ interface SalesInvoicesContract
      *
      * @param  int  $id  Sale invoice identificator.
      */
-    public function getSystemPdf(int $id): mixed;
+    public function getSystemPdf(int $id): ApiFileResponse;
 
     /**
      * Retrieve the user-uploaded document related to a sale invoice.
@@ -125,7 +108,7 @@ interface SalesInvoicesContract
      *
      * @param  int  $id  Sale invoice identificator.
      */
-    public function getFile(int $id): mixed;
+    public function getFile(int $id): ApiFileResponse;
 
     /**
      * Update the user-uploaded document related to a sale invoice.
@@ -133,12 +116,9 @@ interface SalesInvoicesContract
      * @see https://rmp-api.rik.ee/api.html#operation/put-sale_invoices_one_document_user
      *
      * @param  int  $id  Sale invoice identificator.
-     * @param array<string,mixed>|array{
-     *   "name": string,
-     *   "contents": string,
-     * } $parameters Base64-encoded file payload.
+     * @param  array<string, mixed>  $parameters  Base64-encoded file payload.
      */
-    public function updateFile(int $id, array $parameters): mixed;
+    public function updateFile(int $id, array $parameters): ApiResponse;
 
     /**
      * Delete the user-uploaded document related to a sale invoice.
@@ -147,7 +127,7 @@ interface SalesInvoicesContract
      *
      * @param  int  $id  Sale invoice identificator.
      */
-    public function deleteFile(int $id): mixed;
+    public function deleteFile(int $id): ApiResponse;
 
     /**
      * Retrieve delivery options for one specific sale invoice.
@@ -156,7 +136,7 @@ interface SalesInvoicesContract
      *
      * @param  int  $id  Sale invoice identificator.
      */
-    public function getDeliveryOptions(int $id): mixed;
+    public function getDeliveryOptions(int $id): SaleInvoiceDeliveryOptionsResponse;
 
     /**
      * Send one specific sale invoice to the customer.
@@ -164,13 +144,7 @@ interface SalesInvoicesContract
      * @see https://rmp-api.rik.ee/api.html#operation/patch-sale_invoices_one_deliver
      *
      * @param  int  $id  Sale invoice identificator.
-     * @param array<string,mixed>|array{
-     *   "send_einvoice": bool,
-     *   "send_email": bool,
-     *   "email_addresses": string,
-     *   "email_subject": string,
-     *   "email_body": string,
-     * } $parameters
+     * @param  array<string, mixed>  $parameters
      */
-    public function deliver(int $id, array $parameters): mixed;
+    public function deliver(int $id, array $parameters): ApiResponse;
 }

@@ -13,6 +13,7 @@ use EFinancialsClient\Responses\Products\ListResponse as ProductsListResponse;
 use EFinancialsClient\Responses\PurchaseArticles\ListResponse as PurchaseArticlesListResponse;
 use EFinancialsClient\Responses\PurchaseInvoices\ListResponse as PurchaseInvoicesListResponse;
 use EFinancialsClient\Responses\SalesArticles\ListResponse as SalesArticlesListResponse;
+use EFinancialsClient\Responses\SalesInvoices\ListResponse as SalesInvoicesListResponse;
 use EFinancialsClient\Responses\Templates\ListResponse as TemplatesListResponse;
 use EFinancialsClient\Responses\Transactions\ListResponse as TransactionsListResponse;
 use EFinancialsClient\Responses\VatInfo\VatInfoResponse;
@@ -58,6 +59,6 @@ it('validates demo api response shapes', function () {
         ->and($client->invoices()->allSettings())->toBeInstanceOf(InvoiceInfoResponse::class)
         ->and($client->journals()->all())->toBeInstanceOf(JournalsListResponse::class)
         ->and($client->transactions()->all())->toBeInstanceOf(TransactionsListResponse::class)
-        ->and($client->salesInvoices()->all())->toBeArray()
+        ->and($client->salesInvoices()->all())->toBeInstanceOf(SalesInvoicesListResponse::class)
         ->and($client->purchaseInvoices()->all())->toBeInstanceOf(PurchaseInvoicesListResponse::class);
 })->skip(! $hasCredentials, 'Demo API credentials are not configured.');
