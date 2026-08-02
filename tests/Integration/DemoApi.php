@@ -1,0 +1,51 @@
+<?php
+
+use EFinancialsClient\Responses\Clients\ListResponse as ClientsListResponse;
+use EFinancialsClient\Responses\Currencies\ListResponse as CurrenciesListResponse;
+use EFinancialsClient\Responses\Templates\ListResponse as TemplatesListResponse;
+use EFinancialsClient\Responses\VatInfo\VatInfoResponse;
+
+$hasCredentials = is_string(getenv('E_FINANCIALS_API_KEY_ID') ?: null)
+    && getenv('E_FINANCIALS_API_KEY_ID') !== ''
+    && is_string(getenv('E_FINANCIALS_API_KEY_PUBLIC') ?: null)
+    && getenv('E_FINANCIALS_API_KEY_PUBLIC') !== ''
+    && is_string(getenv('E_FINANCIALS_API_KEY_PASSWORD') ?: null)
+    && getenv('E_FINANCIALS_API_KEY_PASSWORD') !== '';
+
+it('validates demo api response shapes', function () {
+    $client = EFinancials::factory()
+        ->withApiKeyId((string) getenv('E_FINANCIALS_API_KEY_ID'))
+        ->withApiKeyPublic((string) getenv('E_FINANCIALS_API_KEY_PUBLIC'))
+        ->withApiKeyPassword((string) getenv('E_FINANCIALS_API_KEY_PASSWORD'))
+        ->make();
+
+    $currencies = $client->currencies()->all();
+    expect($currencies)->toBeInstanceOf(CurrenciesListResponse::class)
+        ->and($currencies->data)->not->toBeEmpty()
+        ->and($currencies->data[0]->id)->toBeString();
+
+    $clients = $client->clients()->all();
+    expect($clients)->toBeInstanceOf(ClientsListResponse::class)
+        ->and($clients->currentPage)->toBeInt()
+        ->and($clients->items)->toBeArray();
+
+    $templates = $client->templates()->all();
+    expect($templates)->toBeInstanceOf(TemplatesListResponse::class);
+
+    $vatInfo = $client->bank()->getVatInfo();
+    expect($vatInfo)->toBeInstanceOf(VatInfoResponse::class);
+
+    expect($client->accounts()->all())->toBeArray()
+        ->and($client->accountDimensions()->all())->toBeArray()
+        ->and($client->bank()->all())->toBeArray()
+        ->and($client->products()->all())->toBeArray()
+        ->and($client->costProfitCentres()->all())->toBeArray()
+        ->and($client->salesArticles()->all())->toBeArray()
+        ->and($client->purchaseArticles()->all())->toBeArray()
+        ->and($client->invoices()->all())->toBeArray()
+        ->and($client->invoices()->allSettings())->toBeArray()
+        ->and($client->journals()->all())->toBeArray()
+        ->and($client->transactions()->all())->toBeArray()
+        ->and($client->salesInvoices()->all())->toBeArray()
+        ->and($client->purchaseInvoices()->all())->toBeArray();
+})->skip(! $hasCredentials, 'Demo API credentials are not configured.');

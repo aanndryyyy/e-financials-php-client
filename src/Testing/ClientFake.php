@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace EFinancialsClient;
+namespace EFinancialsClient\Testing;
 
 use EFinancialsClient\Contracts\ClientContract;
-use EFinancialsClient\Contracts\TransporterContract;
+use EFinancialsClient\Contracts\ResponseContract;
 use EFinancialsClient\Resources\AccountDimensions;
 use EFinancialsClient\Resources\Accounts;
 use EFinancialsClient\Resources\Bank;
@@ -21,12 +21,69 @@ use EFinancialsClient\Resources\SalesArticles;
 use EFinancialsClient\Resources\SalesInvoices;
 use EFinancialsClient\Resources\Templates;
 use EFinancialsClient\Resources\Transactions;
+use EFinancialsClient\ValueObjects\Transporter\Payload;
+use PHPUnit\Framework\Assert as PHPUnit;
+use Throwable;
 
-final class Client implements ClientContract
+final class ClientFake implements ClientContract
 {
-    public function __construct(private readonly TransporterContract $transporter)
+    private TransporterFake $transporter;
+
+    /**
+     * @param  array<int, ResponseContract|array<array-key, mixed>|string|Throwable>  $responses
+     */
+    public function __construct(array $responses = [])
     {
-        // ..
+        $this->transporter = new TransporterFake($responses);
+    }
+
+    /**
+     * @param  array<int, ResponseContract|array<array-key, mixed>|string|Throwable>  $responses
+     */
+    public function addResponses(array $responses): void
+    {
+        $this->transporter->addResponses($responses);
+    }
+
+    public function assertSent(string $resource, ?callable $callback = null): void
+    {
+        PHPUnit::assertTrue(
+            $this->sent($resource, $callback) !== [],
+            "The expected [{$resource}] request was not sent."
+        );
+    }
+
+    public function assertNotSent(string $resource, ?callable $callback = null): void
+    {
+        PHPUnit::assertCount(
+            0,
+            $this->sent($resource, $callback),
+            "The unexpected [{$resource}] request was sent."
+        );
+    }
+
+    public function assertNothingSent(): void
+    {
+        PHPUnit::assertEmpty($this->transporter->recorded(), 'Unexpected requests were sent.');
+    }
+
+    /**
+     * @return array<int, Payload>
+     */
+    private function sent(string $resource, ?callable $callback = null): array
+    {
+        $callback ??= static fn (Payload $payload): bool => true;
+
+        return array_values(array_filter(
+            $this->transporter->recorded(),
+            static function (Payload $payload) use ($resource, $callback): bool {
+                if (! str_starts_with(ltrim($payload->resource(), '/'), ltrim($resource, '/'))) {
+                    return false;
+                }
+
+                return $callback($payload);
+            },
+        ));
     }
 
     public function accountDimensions(): AccountDimensions
