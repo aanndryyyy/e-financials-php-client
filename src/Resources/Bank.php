@@ -11,6 +11,7 @@ use EFinancialsClient\Responses\Bank\BankAccountResponse;
 use EFinancialsClient\Responses\Bank\ListResponse;
 use EFinancialsClient\Responses\VatInfo\VatInfoResponse;
 use EFinancialsClient\ValueObjects\Transporter\Payload;
+use EFinancialsClient\ValueObjects\Transporter\ResourcePath;
 use EFinancialsClient\ValueObjects\Transporter\Response;
 use InvalidArgumentException;
 
@@ -25,7 +26,7 @@ final class Bank implements BankContract
      */
     public function all(): ListResponse
     {
-        $payload = Payload::get('bank_accounts');
+        $payload = Payload::get(ResourcePath::collection('bank_accounts'));
 
         /** @var Response<array<int, array<array-key, mixed>>> $response */
         $response = $this->transporter->request($payload);
@@ -43,7 +44,7 @@ final class Bank implements BankContract
      */
     public function get(int $id): BankAccountResponse
     {
-        $payload = Payload::get('bank_accounts/'.$id);
+        $payload = Payload::get(ResourcePath::one('bank_accounts', $id));
 
         /** @var Response<array<array-key, mixed>> $response */
         $response = $this->transporter->request($payload);
@@ -78,7 +79,7 @@ final class Bank implements BankContract
             );
         }
 
-        $payload = Payload::post('bank_accounts', $parameters);
+        $payload = Payload::post(ResourcePath::collection('bank_accounts'), $parameters);
 
         /** @var Response<array{code: int, messages?: array<int, string>, created_object_id?: int|null}> $response */
         $response = $this->transporter->request($payload);
@@ -113,7 +114,7 @@ final class Bank implements BankContract
             );
         }
 
-        $payload = Payload::patch('bank_accounts/'.$id, $parameters);
+        $payload = Payload::patch(ResourcePath::one('bank_accounts', $id), $parameters);
 
         /** @var Response<array{code: int, messages?: array<int, string>, created_object_id?: int|null}> $response */
         $response = $this->transporter->request($payload);
@@ -130,7 +131,7 @@ final class Bank implements BankContract
      */
     public function delete(int $id): ApiResponse
     {
-        $payload = Payload::delete('bank_accounts/'.$id);
+        $payload = Payload::delete(ResourcePath::one('bank_accounts', $id));
 
         /** @var Response<array{code: int, messages?: array<int, string>, created_object_id?: int|null}> $response */
         $response = $this->transporter->request($payload);
@@ -145,7 +146,7 @@ final class Bank implements BankContract
      */
     public function getVatInfo(): VatInfoResponse
     {
-        $payload = Payload::get('vat_info');
+        $payload = Payload::get(ResourcePath::collection('vat_info'));
 
         /** @var Response<array{vat_number?: string|null, tax_refnumber?: string|null}> $response */
         $response = $this->transporter->request($payload);

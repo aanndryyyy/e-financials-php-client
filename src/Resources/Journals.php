@@ -13,6 +13,7 @@ use EFinancialsClient\Responses\ApiResponse;
 use EFinancialsClient\Responses\Journals\JournalResponse;
 use EFinancialsClient\Responses\Journals\ListResponse;
 use EFinancialsClient\ValueObjects\Transporter\Payload;
+use EFinancialsClient\ValueObjects\Transporter\ResourcePath;
 use EFinancialsClient\ValueObjects\Transporter\Response;
 use InvalidArgumentException;
 
@@ -60,7 +61,7 @@ final class Journals implements JournalsContract
                 : $endDate;
         }
 
-        $payload = Payload::get('journals', $query);
+        $payload = Payload::get(ResourcePath::collection('journals'), $query);
 
         /** @var Response<array{current_page: int, total_pages: int, items: array<int, array<string, mixed>>}> $response */
         $response = $this->transporter->request($payload);
@@ -77,7 +78,7 @@ final class Journals implements JournalsContract
      */
     public function get(int $id): JournalResponse
     {
-        $payload = Payload::get('journals/'.$id);
+        $payload = Payload::get(ResourcePath::one('journals', $id));
 
         /** @var Response<array<string, mixed>> $response */
         $response = $this->transporter->request($payload);
@@ -112,7 +113,7 @@ final class Journals implements JournalsContract
             );
         }
 
-        $payload = Payload::post('journals', $parameters);
+        $payload = Payload::post(ResourcePath::collection('journals'), $parameters);
 
         /** @var Response<array{code: int, messages?: array<int, string>, created_object_id?: int|null}> $response */
         $response = $this->transporter->request($payload);
@@ -148,7 +149,7 @@ final class Journals implements JournalsContract
             );
         }
 
-        $payload = Payload::patch('journals/'.$id, $parameters);
+        $payload = Payload::patch(ResourcePath::one('journals', $id), $parameters);
 
         /** @var Response<array{code: int, messages?: array<int, string>, created_object_id?: int|null}> $response */
         $response = $this->transporter->request($payload);
@@ -165,7 +166,7 @@ final class Journals implements JournalsContract
      */
     public function delete(int $id): ApiResponse
     {
-        $payload = Payload::delete('journals/'.$id);
+        $payload = Payload::delete(ResourcePath::one('journals', $id));
 
         /** @var Response<array{code: int, messages?: array<int, string>, created_object_id?: int|null}> $response */
         $response = $this->transporter->request($payload);
@@ -182,7 +183,7 @@ final class Journals implements JournalsContract
      */
     public function register(int $id): ApiResponse
     {
-        $payload = Payload::patch('journals/'.$id.'/register');
+        $payload = Payload::patch(ResourcePath::one('journals', $id, 'register'));
 
         /** @var Response<array{code: int, messages?: array<int, string>, created_object_id?: int|null}> $response */
         $response = $this->transporter->request($payload);
@@ -199,7 +200,7 @@ final class Journals implements JournalsContract
      */
     public function invalidate(int $id): ApiResponse
     {
-        $payload = Payload::patch('journals/'.$id.'/invalidate');
+        $payload = Payload::patch(ResourcePath::one('journals', $id, 'invalidate'));
 
         /** @var Response<array{code: int, messages?: array<int, string>, created_object_id?: int|null}> $response */
         $response = $this->transporter->request($payload);
@@ -216,7 +217,7 @@ final class Journals implements JournalsContract
      */
     public function getFile(int $id): ApiFileResponse
     {
-        $payload = Payload::get('journals/'.$id.'/document_user');
+        $payload = Payload::get(ResourcePath::one('journals', $id, 'document_user'));
 
         /** @var Response<array{name: string, contents: string}> $response */
         $response = $this->transporter->request($payload);
@@ -252,7 +253,7 @@ final class Journals implements JournalsContract
             );
         }
 
-        $payload = Payload::put('journals/'.$id.'/document_user', $parameters);
+        $payload = Payload::put(ResourcePath::one('journals', $id, 'document_user'), $parameters);
 
         /** @var Response<array{code: int, messages?: array<int, string>, created_object_id?: int|null}> $response */
         $response = $this->transporter->request($payload);
@@ -269,7 +270,7 @@ final class Journals implements JournalsContract
      */
     public function deleteFile(int $id): ApiResponse
     {
-        $payload = Payload::delete('journals/'.$id.'/document_user');
+        $payload = Payload::delete(ResourcePath::one('journals', $id, 'document_user'));
 
         /** @var Response<array{code: int, messages?: array<int, string>, created_object_id?: int|null}> $response */
         $response = $this->transporter->request($payload);

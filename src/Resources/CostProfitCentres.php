@@ -10,6 +10,7 @@ use EFinancialsClient\Contracts\Resources\CostProfitCentresContract;
 use EFinancialsClient\Resources\Concerns\Transportable;
 use EFinancialsClient\Responses\CostProfitCentres\ListResponse;
 use EFinancialsClient\ValueObjects\Transporter\Payload;
+use EFinancialsClient\ValueObjects\Transporter\ResourcePath;
 use EFinancialsClient\ValueObjects\Transporter\Response;
 
 final class CostProfitCentres implements CostProfitCentresContract
@@ -38,7 +39,7 @@ final class CostProfitCentres implements CostProfitCentresContract
                 : $modifiedSince;
         }
 
-        $payload = Payload::get('projects', $query);
+        $payload = Payload::get(ResourcePath::collection('projects'), $query);
 
         /** @var Response<array{current_page: int, total_pages: int, items: array<int, array<array-key, mixed>>}> $response */
         $response = $this->transporter->request($payload);

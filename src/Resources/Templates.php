@@ -8,6 +8,7 @@ use EFinancialsClient\Contracts\Resources\TemplatesContract;
 use EFinancialsClient\Resources\Concerns\Transportable;
 use EFinancialsClient\Responses\Templates\ListResponse;
 use EFinancialsClient\ValueObjects\Transporter\Payload;
+use EFinancialsClient\ValueObjects\Transporter\ResourcePath;
 use EFinancialsClient\ValueObjects\Transporter\Response;
 
 final class Templates implements TemplatesContract
@@ -21,7 +22,7 @@ final class Templates implements TemplatesContract
      */
     public function all(): ListResponse
     {
-        $payload = Payload::get('templates');
+        $payload = Payload::get(ResourcePath::collection('templates'));
 
         /** @var Response<array<int, array{id: int, name: string, is_default?: bool, cl_languages_id?: string|null}>> $response */
         $response = $this->transporter->request($payload);

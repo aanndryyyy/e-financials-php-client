@@ -6,6 +6,7 @@ test('resources')->expect('EFinancialsClient\Resources')->toOnlyUse([
     'EFinancialsClient\Resources\Concerns\Transportable',
     'EFinancialsClient\Responses',
     'EFinancialsClient\ValueObjects\Transporter\Payload',
+    'EFinancialsClient\ValueObjects\Transporter\ResourcePath',
     'EFinancialsClient\ValueObjects\Transporter\Response',
     'DateTime',
     'DateTimeInterface',

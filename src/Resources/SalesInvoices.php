@@ -14,6 +14,7 @@ use EFinancialsClient\Responses\SalesInvoices\ListResponse;
 use EFinancialsClient\Responses\SalesInvoices\SaleInvoiceDeliveryOptionsResponse;
 use EFinancialsClient\Responses\SalesInvoices\SaleInvoiceResponse;
 use EFinancialsClient\ValueObjects\Transporter\Payload;
+use EFinancialsClient\ValueObjects\Transporter\ResourcePath;
 use EFinancialsClient\ValueObjects\Transporter\Response;
 use InvalidArgumentException;
 
@@ -79,7 +80,7 @@ final class SalesInvoices implements SalesInvoicesContract
             $query['clients_id'] = $clientsId;
         }
 
-        $payload = Payload::get('sale_invoices', $query);
+        $payload = Payload::get(ResourcePath::collection('sale_invoices'), $query);
 
         /** @var Response<array{current_page: int, total_pages: int, items: array<int, array<string, mixed>>}> $response */
         $response = $this->transporter->request($payload);
@@ -96,7 +97,7 @@ final class SalesInvoices implements SalesInvoicesContract
      */
     public function get(int $id): SaleInvoiceResponse
     {
-        $payload = Payload::get('sale_invoices/'.$id);
+        $payload = Payload::get(ResourcePath::one('sale_invoices', $id));
 
         /** @var Response<array<string, mixed>> $response */
         $response = $this->transporter->request($payload);
@@ -139,7 +140,7 @@ final class SalesInvoices implements SalesInvoicesContract
             );
         }
 
-        $payload = Payload::post('sale_invoices', $parameters);
+        $payload = Payload::post(ResourcePath::collection('sale_invoices'), $parameters);
 
         /** @var Response<array{code: int, messages?: array<int, string>, created_object_id?: int|null}> $response */
         $response = $this->transporter->request($payload);
@@ -183,7 +184,7 @@ final class SalesInvoices implements SalesInvoicesContract
             );
         }
 
-        $payload = Payload::patch('sale_invoices/'.$id, $parameters);
+        $payload = Payload::patch(ResourcePath::one('sale_invoices', $id), $parameters);
 
         /** @var Response<array{code: int, messages?: array<int, string>, created_object_id?: int|null}> $response */
         $response = $this->transporter->request($payload);
@@ -200,7 +201,7 @@ final class SalesInvoices implements SalesInvoicesContract
      */
     public function delete(int $id): ApiResponse
     {
-        $payload = Payload::delete('sale_invoices/'.$id);
+        $payload = Payload::delete(ResourcePath::one('sale_invoices', $id));
 
         /** @var Response<array{code: int, messages?: array<int, string>, created_object_id?: int|null}> $response */
         $response = $this->transporter->request($payload);
@@ -217,7 +218,7 @@ final class SalesInvoices implements SalesInvoicesContract
      */
     public function register(int $id): ApiResponse
     {
-        $payload = Payload::patch('sale_invoices/'.$id.'/register');
+        $payload = Payload::patch(ResourcePath::one('sale_invoices', $id, 'register'));
 
         /** @var Response<array{code: int, messages?: array<int, string>, created_object_id?: int|null}> $response */
         $response = $this->transporter->request($payload);
@@ -234,7 +235,7 @@ final class SalesInvoices implements SalesInvoicesContract
      */
     public function invalidate(int $id): ApiResponse
     {
-        $payload = Payload::patch('sale_invoices/'.$id.'/invalidate');
+        $payload = Payload::patch(ResourcePath::one('sale_invoices', $id, 'invalidate'));
 
         /** @var Response<array{code: int, messages?: array<int, string>, created_object_id?: int|null}> $response */
         $response = $this->transporter->request($payload);
@@ -251,7 +252,7 @@ final class SalesInvoices implements SalesInvoicesContract
      */
     public function getXml(int $id): ApiFileResponse
     {
-        $payload = Payload::get('sale_invoices/'.$id.'/xml');
+        $payload = Payload::get(ResourcePath::one('sale_invoices', $id, 'xml'));
 
         /** @var Response<array{name: string, contents: string}> $response */
         $response = $this->transporter->request($payload);
@@ -268,7 +269,7 @@ final class SalesInvoices implements SalesInvoicesContract
      */
     public function getSystemPdf(int $id): ApiFileResponse
     {
-        $payload = Payload::get('sale_invoices/'.$id.'/pdf_system');
+        $payload = Payload::get(ResourcePath::one('sale_invoices', $id, 'pdf_system'));
 
         /** @var Response<array{name: string, contents: string}> $response */
         $response = $this->transporter->request($payload);
@@ -285,7 +286,7 @@ final class SalesInvoices implements SalesInvoicesContract
      */
     public function getFile(int $id): ApiFileResponse
     {
-        $payload = Payload::get('sale_invoices/'.$id.'/document_user');
+        $payload = Payload::get(ResourcePath::one('sale_invoices', $id, 'document_user'));
 
         /** @var Response<array{name: string, contents: string}> $response */
         $response = $this->transporter->request($payload);
@@ -321,7 +322,7 @@ final class SalesInvoices implements SalesInvoicesContract
             );
         }
 
-        $payload = Payload::put('sale_invoices/'.$id.'/document_user', $parameters);
+        $payload = Payload::put(ResourcePath::one('sale_invoices', $id, 'document_user'), $parameters);
 
         /** @var Response<array{code: int, messages?: array<int, string>, created_object_id?: int|null}> $response */
         $response = $this->transporter->request($payload);
@@ -338,7 +339,7 @@ final class SalesInvoices implements SalesInvoicesContract
      */
     public function deleteFile(int $id): ApiResponse
     {
-        $payload = Payload::delete('sale_invoices/'.$id.'/document_user');
+        $payload = Payload::delete(ResourcePath::one('sale_invoices', $id, 'document_user'));
 
         /** @var Response<array{code: int, messages?: array<int, string>, created_object_id?: int|null}> $response */
         $response = $this->transporter->request($payload);
@@ -355,7 +356,7 @@ final class SalesInvoices implements SalesInvoicesContract
      */
     public function getDeliveryOptions(int $id): SaleInvoiceDeliveryOptionsResponse
     {
-        $payload = Payload::get('sale_invoices/'.$id.'/delivery_options');
+        $payload = Payload::get(ResourcePath::one('sale_invoices', $id, 'delivery_options'));
 
         /** @var Response<array<string, mixed>> $response */
         $response = $this->transporter->request($payload);
@@ -391,7 +392,7 @@ final class SalesInvoices implements SalesInvoicesContract
             );
         }
 
-        $payload = Payload::patch('sale_invoices/'.$id.'/deliver', $parameters);
+        $payload = Payload::patch(ResourcePath::one('sale_invoices', $id, 'deliver'), $parameters);
 
         /** @var Response<array{code: int, messages?: array<int, string>, created_object_id?: int|null}> $response */
         $response = $this->transporter->request($payload);

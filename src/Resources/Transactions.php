@@ -13,6 +13,7 @@ use EFinancialsClient\Responses\ApiResponse;
 use EFinancialsClient\Responses\Transactions\ListResponse;
 use EFinancialsClient\Responses\Transactions\TransactionResponse;
 use EFinancialsClient\ValueObjects\Transporter\Payload;
+use EFinancialsClient\ValueObjects\Transporter\ResourcePath;
 use EFinancialsClient\ValueObjects\Transporter\Response;
 use InvalidArgumentException;
 
@@ -78,7 +79,7 @@ final class Transactions implements TransactionsContract
             $query['clients_id'] = $clientsId;
         }
 
-        $payload = Payload::get('transactions', $query);
+        $payload = Payload::get(ResourcePath::collection('transactions'), $query);
 
         /** @var Response<array{current_page: int, total_pages: int, items: array<int, array<string, mixed>>}> $response */
         $response = $this->transporter->request($payload);
@@ -95,7 +96,7 @@ final class Transactions implements TransactionsContract
      */
     public function get(int $id): TransactionResponse
     {
-        $payload = Payload::get('transactions/'.$id);
+        $payload = Payload::get(ResourcePath::one('transactions', $id));
 
         /** @var Response<array<string, mixed>> $response */
         $response = $this->transporter->request($payload);
@@ -133,7 +134,7 @@ final class Transactions implements TransactionsContract
             );
         }
 
-        $payload = Payload::post('transactions', $parameters);
+        $payload = Payload::post(ResourcePath::collection('transactions'), $parameters);
 
         /** @var Response<array{code: int, messages?: array<int, string>, created_object_id?: int|null}> $response */
         $response = $this->transporter->request($payload);
@@ -172,7 +173,7 @@ final class Transactions implements TransactionsContract
             );
         }
 
-        $payload = Payload::patch('transactions/'.$id, $parameters);
+        $payload = Payload::patch(ResourcePath::one('transactions', $id), $parameters);
 
         /** @var Response<array{code: int, messages?: array<int, string>, created_object_id?: int|null}> $response */
         $response = $this->transporter->request($payload);
@@ -189,7 +190,7 @@ final class Transactions implements TransactionsContract
      */
     public function delete(int $id): ApiResponse
     {
-        $payload = Payload::delete('transactions/'.$id);
+        $payload = Payload::delete(ResourcePath::one('transactions', $id));
 
         /** @var Response<array{code: int, messages?: array<int, string>, created_object_id?: int|null}> $response */
         $response = $this->transporter->request($payload);
@@ -207,7 +208,7 @@ final class Transactions implements TransactionsContract
      */
     public function register(int $id, array $distributions = []): ApiResponse
     {
-        $payload = Payload::patch('transactions/'.$id.'/register', $distributions);
+        $payload = Payload::patch(ResourcePath::one('transactions', $id, 'register'), $distributions);
 
         /** @var Response<array{code: int, messages?: array<int, string>, created_object_id?: int|null}> $response */
         $response = $this->transporter->request($payload);
@@ -224,7 +225,7 @@ final class Transactions implements TransactionsContract
      */
     public function invalidate(int $id): ApiResponse
     {
-        $payload = Payload::patch('transactions/'.$id.'/invalidate');
+        $payload = Payload::patch(ResourcePath::one('transactions', $id, 'invalidate'));
 
         /** @var Response<array{code: int, messages?: array<int, string>, created_object_id?: int|null}> $response */
         $response = $this->transporter->request($payload);
@@ -241,7 +242,7 @@ final class Transactions implements TransactionsContract
      */
     public function getFile(int $id): ApiFileResponse
     {
-        $payload = Payload::get('transactions/'.$id.'/document_user');
+        $payload = Payload::get(ResourcePath::one('transactions', $id, 'document_user'));
 
         /** @var Response<array{name: string, contents: string}> $response */
         $response = $this->transporter->request($payload);
@@ -277,7 +278,7 @@ final class Transactions implements TransactionsContract
             );
         }
 
-        $payload = Payload::put('transactions/'.$id.'/document_user', $parameters);
+        $payload = Payload::put(ResourcePath::one('transactions', $id, 'document_user'), $parameters);
 
         /** @var Response<array{code: int, messages?: array<int, string>, created_object_id?: int|null}> $response */
         $response = $this->transporter->request($payload);
@@ -294,7 +295,7 @@ final class Transactions implements TransactionsContract
      */
     public function deleteFile(int $id): ApiResponse
     {
-        $payload = Payload::delete('transactions/'.$id.'/document_user');
+        $payload = Payload::delete(ResourcePath::one('transactions', $id, 'document_user'));
 
         /** @var Response<array{code: int, messages?: array<int, string>, created_object_id?: int|null}> $response */
         $response = $this->transporter->request($payload);
