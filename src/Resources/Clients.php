@@ -6,6 +6,7 @@ namespace EFinancialsClient\Resources;
 
 use DateTime;
 use DateTimeInterface;
+use EFinancialsClient\Contracts\Resources\ClientsContract;
 use EFinancialsClient\Resources\Concerns\Transportable;
 use EFinancialsClient\Responses\ApiResponse;
 use EFinancialsClient\Responses\Clients\ClientResponse;
@@ -14,7 +15,7 @@ use EFinancialsClient\ValueObjects\Transporter\Payload;
 use EFinancialsClient\ValueObjects\Transporter\Response;
 use InvalidArgumentException;
 
-final class Clients
+final class Clients implements ClientsContract
 {
     use Transportable;
 

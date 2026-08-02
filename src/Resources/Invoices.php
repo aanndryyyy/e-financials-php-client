@@ -4,10 +4,11 @@ declare(strict_types=1);
 
 namespace EFinancialsClient\Resources;
 
+use EFinancialsClient\Contracts\Resources\InvoicesContract;
 use EFinancialsClient\Resources\Concerns\Transportable;
 use EFinancialsClient\ValueObjects\Transporter\Payload;
 
-final class Invoices
+final class Invoices implements InvoicesContract
 {
     use Transportable;
 

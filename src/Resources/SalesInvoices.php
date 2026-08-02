@@ -5,10 +5,11 @@ declare(strict_types=1);
 namespace EFinancialsClient\Resources;
 
 use DateTime;
+use EFinancialsClient\Contracts\Resources\SalesInvoicesContract;
 use EFinancialsClient\Resources\Concerns\Transportable;
 use EFinancialsClient\ValueObjects\Transporter\Payload;
 
-final class SalesInvoices
+final class SalesInvoices implements SalesInvoicesContract
 {
     use Transportable;
 

@@ -1,6 +1,7 @@
 <?php
 
 test('resources')->expect('EFinancialsClient\Resources')->toOnlyUse([
+    'EFinancialsClient\Contracts\Resources',
     'EFinancialsClient\Contracts\TransporterContract',
     'EFinancialsClient\Resources\Concerns\Transportable',
     'EFinancialsClient\Responses',
@@ -13,6 +14,7 @@ test('resources')->expect('EFinancialsClient\Resources')->toOnlyUse([
 
 test('client')->expect('EFinancialsClient\Client')->toOnlyUse([
     'EFinancialsClient\Contracts\ClientContract',
+    'EFinancialsClient\Contracts\Resources',
     'EFinancialsClient\Contracts\TransporterContract',
     'EFinancialsClient\Resources',
 ]);
@@ -32,3 +34,7 @@ test('resources are final')
     ->classes()
     ->toBeFinal()
     ->ignoring('EFinancialsClient\Resources\Concerns\Transportable');
+
+test('resource contracts are interfaces')
+    ->expect('EFinancialsClient\Contracts\Resources')
+    ->toBeInterfaces();

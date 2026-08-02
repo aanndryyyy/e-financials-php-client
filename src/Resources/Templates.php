@@ -4,12 +4,13 @@ declare(strict_types=1);
 
 namespace EFinancialsClient\Resources;
 
+use EFinancialsClient\Contracts\Resources\TemplatesContract;
 use EFinancialsClient\Resources\Concerns\Transportable;
 use EFinancialsClient\Responses\Templates\ListResponse;
 use EFinancialsClient\ValueObjects\Transporter\Payload;
 use EFinancialsClient\ValueObjects\Transporter\Response;
 
-final class Templates
+final class Templates implements TemplatesContract
 {
     use Transportable;
 

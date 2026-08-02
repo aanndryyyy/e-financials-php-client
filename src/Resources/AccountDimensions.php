@@ -4,12 +4,13 @@ declare(strict_types=1);
 
 namespace EFinancialsClient\Resources;
 
+use EFinancialsClient\Contracts\Resources\AccountDimensionsContract;
 use EFinancialsClient\Resources\Concerns\Transportable;
 use EFinancialsClient\Responses\AccountDimensions\ListResponse;
 use EFinancialsClient\ValueObjects\Transporter\Payload;
 use EFinancialsClient\ValueObjects\Transporter\Response;
 
-final class AccountDimensions
+final class AccountDimensions implements AccountDimensionsContract
 {
     use Transportable;
 
