@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace EFinancialsClient\Testing;
 
+use EFinancialsClient\Client;
 use EFinancialsClient\Contracts\ClientContract;
 use EFinancialsClient\Contracts\Resources\AccountDimensionsContract;
 use EFinancialsClient\Contracts\Resources\AccountsContract;
@@ -21,28 +22,16 @@ use EFinancialsClient\Contracts\Resources\SalesInvoicesContract;
 use EFinancialsClient\Contracts\Resources\TemplatesContract;
 use EFinancialsClient\Contracts\Resources\TransactionsContract;
 use EFinancialsClient\Contracts\ResponseContract;
-use EFinancialsClient\Resources\AccountDimensions;
-use EFinancialsClient\Resources\Accounts;
-use EFinancialsClient\Resources\Bank;
-use EFinancialsClient\Resources\Clients;
-use EFinancialsClient\Resources\CostProfitCentres;
-use EFinancialsClient\Resources\Currencies;
-use EFinancialsClient\Resources\Invoices;
-use EFinancialsClient\Resources\Journals;
-use EFinancialsClient\Resources\Products;
-use EFinancialsClient\Resources\PurchaseArticles;
-use EFinancialsClient\Resources\PurchaseInvoices;
-use EFinancialsClient\Resources\SalesArticles;
-use EFinancialsClient\Resources\SalesInvoices;
-use EFinancialsClient\Resources\Templates;
-use EFinancialsClient\Resources\Transactions;
 use EFinancialsClient\ValueObjects\Transporter\Payload;
+use EFinancialsClient\ValueObjects\Transporter\Response;
 use PHPUnit\Framework\Assert as PHPUnit;
 use Throwable;
 
 final class ClientFake implements ClientContract
 {
-    private TransporterFake $transporter;
+    private readonly TransporterFake $transporter;
+
+    private readonly Client $client;
 
     /**
      * @param  array<int, ResponseContract|array<array-key, mixed>|string|Throwable>  $responses
@@ -50,6 +39,7 @@ final class ClientFake implements ClientContract
     public function __construct(array $responses = [])
     {
         $this->transporter = new TransporterFake($responses);
+        $this->client = new Client($this->transporter);
     }
 
     /**
@@ -60,11 +50,44 @@ final class ClientFake implements ClientContract
         $this->transporter->addResponses($responses);
     }
 
-    public function assertSent(string $resource, ?callable $callback = null): void
+    /**
+     * @return array<int, Payload>
+     */
+    public function recorded(): array
     {
+        return $this->transporter->recorded();
+    }
+
+    /**
+     * @return array<int, array{0: Payload, 1: Response}>
+     */
+    public function recordedPairs(): array
+    {
+        return $this->transporter->recordedPairs();
+    }
+
+    public function assertSent(string $resource, callable|int|null $callback = null): void
+    {
+        if (is_int($callback)) {
+            $this->assertSentTimes($resource, $callback);
+
+            return;
+        }
+
         PHPUnit::assertTrue(
             $this->sent($resource, $callback) !== [],
             "The expected [{$resource}] request was not sent."
+        );
+    }
+
+    public function assertSentTimes(string $resource, int $times, ?callable $callback = null): void
+    {
+        $count = count($this->sent($resource, $callback));
+
+        PHPUnit::assertSame(
+            $times,
+            $count,
+            "The expected [{$resource}] request was sent {$count} times instead of {$times} times."
         );
     }
 
@@ -79,7 +102,15 @@ final class ClientFake implements ClientContract
 
     public function assertNothingSent(): void
     {
-        PHPUnit::assertEmpty($this->transporter->recorded(), 'Unexpected requests were sent.');
+        $resources = array_map(
+            static fn (Payload $payload): string => $payload->resource(),
+            $this->transporter->recorded(),
+        );
+
+        PHPUnit::assertEmpty(
+            $resources,
+            'The following requests were sent unexpectedly: '.implode(', ', $resources)
+        );
     }
 
     /**
@@ -88,11 +119,12 @@ final class ClientFake implements ClientContract
     private function sent(string $resource, ?callable $callback = null): array
     {
         $callback ??= static fn (Payload $payload): bool => true;
+        $expected = ltrim($resource, '/');
 
         return array_values(array_filter(
             $this->transporter->recorded(),
-            static function (Payload $payload) use ($resource, $callback): bool {
-                if (! str_starts_with(ltrim($payload->resource(), '/'), ltrim($resource, '/'))) {
+            static function (Payload $payload) use ($expected, $callback): bool {
+                if (ltrim($payload->resource(), '/') !== $expected) {
                     return false;
                 }
 
@@ -103,76 +135,76 @@ final class ClientFake implements ClientContract
 
     public function accountDimensions(): AccountDimensionsContract
     {
-        return new AccountDimensions($this->transporter);
+        return $this->client->accountDimensions();
     }
 
     public function accounts(): AccountsContract
     {
-        return new Accounts($this->transporter);
+        return $this->client->accounts();
     }
 
     public function bank(): BankContract
     {
-        return new Bank($this->transporter);
+        return $this->client->bank();
     }
 
     public function clients(): ClientsContract
     {
-        return new Clients($this->transporter);
+        return $this->client->clients();
     }
 
     public function costProfitCentres(): CostProfitCentresContract
     {
-        return new CostProfitCentres($this->transporter);
+        return $this->client->costProfitCentres();
     }
 
     public function currencies(): CurrenciesContract
     {
-        return new Currencies($this->transporter);
+        return $this->client->currencies();
     }
 
     public function invoices(): InvoicesContract
     {
-        return new Invoices($this->transporter);
+        return $this->client->invoices();
     }
 
     public function journals(): JournalsContract
     {
-        return new Journals($this->transporter);
+        return $this->client->journals();
     }
 
     public function products(): ProductsContract
     {
-        return new Products($this->transporter);
+        return $this->client->products();
     }
 
     public function purchaseArticles(): PurchaseArticlesContract
     {
-        return new PurchaseArticles($this->transporter);
+        return $this->client->purchaseArticles();
     }
 
     public function purchaseInvoices(): PurchaseInvoicesContract
     {
-        return new PurchaseInvoices($this->transporter);
+        return $this->client->purchaseInvoices();
     }
 
     public function salesArticles(): SalesArticlesContract
     {
-        return new SalesArticles($this->transporter);
+        return $this->client->salesArticles();
     }
 
     public function salesInvoices(): SalesInvoicesContract
     {
-        return new SalesInvoices($this->transporter);
+        return $this->client->salesInvoices();
     }
 
     public function templates(): TemplatesContract
     {
-        return new Templates($this->transporter);
+        return $this->client->templates();
     }
 
     public function transactions(): TransactionsContract
     {
-        return new Transactions($this->transporter);
+        return $this->client->transactions();
     }
 }

@@ -50,6 +50,8 @@ $client = EFinancials::client('api_key_id', 'api_key_public', 'api_key_password'
 
 ## Testing with ClientFake
 
+`ClientFake` implements `ClientContract` by composing the real `Client` with a fake transporter. Queue response DTOs, arrays, JSON strings, or throwables, then assert on exact request paths.
+
 ```php
 use EFinancialsClient\Responses\Currencies\ListResponse;
 use EFinancialsClient\Testing\ClientFake;
@@ -60,6 +62,7 @@ $client = new ClientFake([
 
 $response = $client->currencies()->all();
 $client->assertSent('currencies');
+$client->assertSentTimes('currencies', 1);
 ```
 
 ## Development
