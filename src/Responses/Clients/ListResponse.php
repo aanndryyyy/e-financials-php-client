@@ -6,6 +6,7 @@ namespace EFinancialsClient\Responses\Clients;
 
 use EFinancialsClient\Contracts\ResponseContract;
 use EFinancialsClient\Responses\Concerns\ArrayAccessible;
+use EFinancialsClient\Responses\Concerns\NormalizesAttributes;
 use EFinancialsClient\Testing\Responses\Concerns\Fakeable;
 
 /**
@@ -21,6 +22,7 @@ final class ListResponse implements ResponseContract
     use ArrayAccessible;
 
     use Fakeable;
+    use NormalizesAttributes;
 
     /**
      * @param  array<int, ClientResponse>  $items
@@ -32,18 +34,21 @@ final class ListResponse implements ResponseContract
     ) {}
 
     /**
-     * @param  array{current_page: int, total_pages: int, items: array<int, array<string, mixed>>}  $attributes
+     * @param  array<array-key, mixed>  $attributes
      */
     public static function from(array $attributes): self
     {
+        /** @var array<int, array<string, mixed>> $rawItems */
+        $rawItems = is_array($attributes['items'] ?? null) ? $attributes['items'] : [];
+
         $items = array_map(
             static fn (array $item): ClientResponse => ClientResponse::from($item),
-            $attributes['items'],
+            $rawItems,
         );
 
         return new self(
-            (int) $attributes['current_page'],
-            (int) $attributes['total_pages'],
+            self::intValue($attributes['current_page'] ?? 0),
+            self::intValue($attributes['total_pages'] ?? 0),
             $items,
         );
     }

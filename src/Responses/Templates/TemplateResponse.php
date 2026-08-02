@@ -6,6 +6,7 @@ namespace EFinancialsClient\Responses\Templates;
 
 use EFinancialsClient\Contracts\ResponseContract;
 use EFinancialsClient\Responses\Concerns\ArrayAccessible;
+use EFinancialsClient\Responses\Concerns\NormalizesAttributes;
 use EFinancialsClient\Testing\Responses\Concerns\Fakeable;
 
 /**
@@ -19,6 +20,7 @@ final class TemplateResponse implements ResponseContract
     use ArrayAccessible;
 
     use Fakeable;
+    use NormalizesAttributes;
 
     private function __construct(
         public readonly int $id,
@@ -28,15 +30,15 @@ final class TemplateResponse implements ResponseContract
     ) {}
 
     /**
-     * @param  array{id: int, name: string, is_default?: bool, cl_languages_id?: string|null}  $attributes
+     * @param  array<array-key, mixed>  $attributes
      */
     public static function from(array $attributes): self
     {
         return new self(
-            (int) $attributes['id'],
-            (string) $attributes['name'],
-            (bool) ($attributes['is_default'] ?? false),
-            isset($attributes['cl_languages_id']) ? (string) $attributes['cl_languages_id'] : null,
+            self::intValue($attributes['id'] ?? 0),
+            self::stringValue($attributes['name'] ?? ''),
+            self::boolValue($attributes['is_default'] ?? false),
+            self::stringOrNull($attributes['cl_languages_id'] ?? null),
         );
     }
 

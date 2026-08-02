@@ -18,10 +18,9 @@ use EFinancialsClient\ValueObjects\ApiCredentials;
 use EFinancialsClient\ValueObjects\Transporter\BaseUri;
 use EFinancialsClient\ValueObjects\Transporter\Headers;
 use EFinancialsClient\ValueObjects\Transporter\Payload;
-use GuzzleHttp\Client as GuzzleClient;
-use GuzzleHttp\Handler\MockHandler;
-use GuzzleHttp\HandlerStack;
-use GuzzleHttp\Psr7\Response;
+use Tests\Fakes\HttpClientFake;
+
+covers(Client::class, HttpTransporter::class, ApiCredentials::class);
 
 it('creates an auth key for a path', function () {
     $credentials = ApiCredentials::from('key-id', 'public-key', 'secret');
@@ -38,12 +37,10 @@ it('creates an auth key for a path', function () {
 });
 
 it('returns decoded json from a successful request', function () {
-    $mock = new MockHandler([
-        new Response(200, [], json_encode(['ok' => true], JSON_THROW_ON_ERROR)),
-    ]);
-
     $transporter = new HttpTransporter(
-        new GuzzleClient(['handler' => HandlerStack::create($mock)]),
+        HttpClientFake::sequence([
+            HttpClientFake::response(200, ['ok' => true]),
+        ]),
         BaseUri::from('https://demo-rmp-api.rik.ee'),
         Headers::create(),
         ApiCredentials::from('key-id', 'public-key', 'secret'),
@@ -55,12 +52,10 @@ it('returns decoded json from a successful request', function () {
 });
 
 it('throws a typed exception for http errors', function () {
-    $mock = new MockHandler([
-        new Response(401, [], 'Unauthorized'),
-    ]);
-
     $transporter = new HttpTransporter(
-        new GuzzleClient(['handler' => HandlerStack::create($mock)]),
+        HttpClientFake::sequence([
+            HttpClientFake::response(401, 'Unauthorized'),
+        ]),
         BaseUri::from('https://demo-rmp-api.rik.ee'),
         Headers::create(),
         ApiCredentials::from('key-id', 'public-key', 'secret'),
@@ -75,7 +70,7 @@ it('exposes resource accessors', function () {
         ->withApiKeyId('key-id')
         ->withApiKeyPublic('public-key')
         ->withApiKeyPassword('secret')
-        ->withHttpClient(new GuzzleClient(['handler' => HandlerStack::create(new MockHandler)]))
+        ->withHttpClient(HttpClientFake::sequence([]))
         ->make();
 
     expect($client->clients())->toBeInstanceOf(Clients::class)

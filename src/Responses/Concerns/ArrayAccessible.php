@@ -21,6 +21,10 @@ trait ArrayAccessible
         return $this->toArray()[$offset]; // @phpstan-ignore-line
     }
 
+    /**
+     * @param  key-of<TArray>|null  $offset
+     * @param  value-of<TArray>  $value
+     */
     public function offsetSet(mixed $offset, mixed $value): never
     {
         throw new BadMethodCallException('Cannot set response attributes.');

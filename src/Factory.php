@@ -118,7 +118,10 @@ final class Factory
             $headers = $headers->withCustomHeader($name, $value);
         }
 
-        $baseUri = BaseUri::from($this->baseUri ?: 'https://demo-rmp-api.rik.ee', $this->apiVersion);
+        $baseUri = BaseUri::from(
+            ($this->baseUri !== null && $this->baseUri !== '') ? $this->baseUri : 'https://demo-rmp-api.rik.ee',
+            $this->apiVersion,
+        );
 
         $client = $this->httpClient ??= Psr18ClientDiscovery::find();
 
