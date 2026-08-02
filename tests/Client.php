@@ -118,7 +118,9 @@ it('maps clients to a fuller OpenAPI projection', function () {
         ->and($list->items[0]->isDeleted)->toBeTrue()
         ->and($list->items[0]->isJuridicalEntity)->toBeTrue()
         ->and($list->items[0]->invoiceElectronicOpts)->toBe([])
-        ->and($list->items[0]->toArray())->toEqualCanonicalizing(ClientResponseFixture::ATTRIBUTES);
+        ->and($list->items[0]->toArray())->toBe(
+            ClientResponse::from(ClientResponseFixture::ATTRIBUTES)->toArray()
+        );
 
     $client = $fake->clients()->get(1916);
 
