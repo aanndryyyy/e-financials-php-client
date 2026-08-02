@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace EFinancialsClient\ValueObjects\Transporter;
 
 /**
- * @template-covariant TData of array
+ * @template TData of array
  *
  * @internal
  */
