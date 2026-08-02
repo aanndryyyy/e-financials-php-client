@@ -11,15 +11,13 @@ class SalesInvoices extends AbstractAPI
      *
      * @see https://rmp-api.rik.ee/api.html#operation/get-sale_invoices
      *
-     * @param int             $page Page of responses to return.
-     * @param DateTime|string $modifiedSince Return only objects modified since provided timestamp.
-     * @param DateTime|string $startDate Object revenue date on given date or later.
-     * @param DateTime|string $endDate Object revenue date on given date or before.
-     * @param string          $status Object status.
-     * @param string          $paymentStatus Object payment status.
-     * @param int|null        $clientsId Customer identificator.
-     *
-     * @return mixed
+     * @param  int  $page  Page of responses to return.
+     * @param  DateTime|string  $modifiedSince  Return only objects modified since provided timestamp.
+     * @param  DateTime|string  $startDate  Object revenue date on given date or later.
+     * @param  DateTime|string  $endDate  Object revenue date on given date or before.
+     * @param  string  $status  Object status.
+     * @param  string  $paymentStatus  Object payment status.
+     * @param  int|null  $clientsId  Customer identificator.
      */
     public function all(
         int $page = 1,
@@ -32,41 +30,41 @@ class SalesInvoices extends AbstractAPI
     ): mixed {
         $query = [];
 
-        if ( $page !== 1 ) {
+        if ($page !== 1) {
             $query['page'] = $page;
         }
 
-        if ( $modifiedSince !== '' ) {
-            $query['modified_since'] = ( $modifiedSince instanceof DateTime )
-                ? $modifiedSince->format( \DateTimeInterface::ATOM )
+        if ($modifiedSince !== '') {
+            $query['modified_since'] = ($modifiedSince instanceof DateTime)
+                ? $modifiedSince->format(\DateTimeInterface::ATOM)
                 : $modifiedSince;
         }
 
-        if ( $startDate !== '' ) {
-            $query['start_date'] = ( $startDate instanceof DateTime )
-                ? $startDate->format( 'Y-m-d' )
+        if ($startDate !== '') {
+            $query['start_date'] = ($startDate instanceof DateTime)
+                ? $startDate->format('Y-m-d')
                 : $startDate;
         }
 
-        if ( $endDate !== '' ) {
-            $query['end_date'] = ( $endDate instanceof DateTime )
-                ? $endDate->format( 'Y-m-d' )
+        if ($endDate !== '') {
+            $query['end_date'] = ($endDate instanceof DateTime)
+                ? $endDate->format('Y-m-d')
                 : $endDate;
         }
 
-        if ( $status !== '' ) {
+        if ($status !== '') {
             $query['status'] = $status;
         }
 
-        if ( $paymentStatus !== '' ) {
+        if ($paymentStatus !== '') {
             $query['payment_status'] = $paymentStatus;
         }
 
-        if ( $clientsId !== null ) {
+        if ($clientsId !== null) {
             $query['clients_id'] = $clientsId;
         }
 
-        $response = $this->client->request( 'GET', 'sale_invoices', $query );
+        $response = $this->client->request('GET', 'sale_invoices', $query);
 
         return $response;
     }
@@ -76,13 +74,11 @@ class SalesInvoices extends AbstractAPI
      *
      * @see https://rmp-api.rik.ee/api.html#operation/get-sale_invoices_one
      *
-     * @param int $id Sale invoice identificator.
-     *
-     * @return mixed
+     * @param  int  $id  Sale invoice identificator.
      */
-    public function get( int $id ): mixed
+    public function get(int $id): mixed
     {
-        $response = $this->client->request( 'GET', 'sale_invoices/' . $id );
+        $response = $this->client->request('GET', 'sale_invoices/'.$id);
 
         return $response;
     }
@@ -104,10 +100,8 @@ class SalesInvoices extends AbstractAPI
      *   "cl_currencies_id": "EUR",
      *   "show_client_balance": false
      * } $parameters
-     *
-     * @return mixed
      */
-    public function create( array $parameters = [] ): mixed
+    public function create(array $parameters = []): mixed
     {
         $missingRequiredParameters = array_diff_key(
             array_flip(
@@ -127,8 +121,8 @@ class SalesInvoices extends AbstractAPI
             $parameters
         );
 
-        if ( count( $missingRequiredParameters ) !== 0 ) {
-            $missingKeys = implode( ', ', array_keys( $missingRequiredParameters ) );
+        if (count($missingRequiredParameters) !== 0) {
+            $missingKeys = implode(', ', array_keys($missingRequiredParameters));
 
             throw new \InvalidArgumentException(
                 "Missing required parameter(s): $missingKeys"
@@ -150,7 +144,7 @@ class SalesInvoices extends AbstractAPI
      *
      * @see https://rmp-api.rik.ee/api.html#operation/patch-sale_invoices_one
      *
-     * @param int $id Sale invoice identificator.
+     * @param  int  $id  Sale invoice identificator.
      * @param array<string,mixed>|array{
      *   "sale_invoice_type": "INVOICE",
      *   "cl_templates_id": 1,
@@ -163,10 +157,8 @@ class SalesInvoices extends AbstractAPI
      *   "cl_currencies_id": "EUR",
      *   "show_client_balance": false
      * } $parameters
-     *
-     * @return mixed
      */
-    public function update( int $id, array $parameters ): mixed
+    public function update(int $id, array $parameters): mixed
     {
         $missingRequiredParameters = array_diff_key(
             array_flip(
@@ -186,8 +178,8 @@ class SalesInvoices extends AbstractAPI
             $parameters
         );
 
-        if ( count( $missingRequiredParameters ) !== 0 ) {
-            $missingKeys = implode( ', ', array_keys( $missingRequiredParameters ) );
+        if (count($missingRequiredParameters) !== 0) {
+            $missingKeys = implode(', ', array_keys($missingRequiredParameters));
 
             throw new \InvalidArgumentException(
                 "Missing required parameter(s): $missingKeys"
@@ -196,7 +188,7 @@ class SalesInvoices extends AbstractAPI
 
         $response = $this->client->request(
             'PATCH',
-            'sale_invoices/' . $id,
+            'sale_invoices/'.$id,
             [],
             $parameters
         );
@@ -209,13 +201,11 @@ class SalesInvoices extends AbstractAPI
      *
      * @see https://rmp-api.rik.ee/api.html#operation/delete-sale_invoices_one
      *
-     * @param int $id Sale invoice identificator.
-     *
-     * @return mixed
+     * @param  int  $id  Sale invoice identificator.
      */
-    public function delete( int $id ): mixed
+    public function delete(int $id): mixed
     {
-        $response = $this->client->request( 'DELETE', 'sale_invoices/' . $id );
+        $response = $this->client->request('DELETE', 'sale_invoices/'.$id);
 
         return $response;
     }
@@ -225,13 +215,11 @@ class SalesInvoices extends AbstractAPI
      *
      * @see https://rmp-api.rik.ee/api.html#operation/patch-sale_invoices_one_register
      *
-     * @param int $id Sale invoice identificator.
-     *
-     * @return mixed
+     * @param  int  $id  Sale invoice identificator.
      */
-    public function register( int $id ): mixed
+    public function register(int $id): mixed
     {
-        $response = $this->client->request( 'PATCH', 'sale_invoices/' . $id . '/register' );
+        $response = $this->client->request('PATCH', 'sale_invoices/'.$id.'/register');
 
         return $response;
     }
@@ -241,13 +229,11 @@ class SalesInvoices extends AbstractAPI
      *
      * @see https://rmp-api.rik.ee/api.html#operation/patch-sale_invoices_one_invalidate
      *
-     * @param int $id Sale invoice identificator.
-     *
-     * @return mixed
+     * @param  int  $id  Sale invoice identificator.
      */
-    public function invalidate( int $id ): mixed
+    public function invalidate(int $id): mixed
     {
-        $response = $this->client->request( 'PATCH', 'sale_invoices/' . $id . '/invalidate' );
+        $response = $this->client->request('PATCH', 'sale_invoices/'.$id.'/invalidate');
 
         return $response;
     }
@@ -257,13 +243,11 @@ class SalesInvoices extends AbstractAPI
      *
      * @see https://rmp-api.rik.ee/api.html#operation/get-sale_invoices_one_xml
      *
-     * @param int $id Sale invoice identificator.
-     *
-     * @return mixed
+     * @param  int  $id  Sale invoice identificator.
      */
-    public function getXml( int $id ): mixed
+    public function getXml(int $id): mixed
     {
-        $response = $this->client->request( 'GET', 'sale_invoices/' . $id . '/xml' );
+        $response = $this->client->request('GET', 'sale_invoices/'.$id.'/xml');
 
         return $response;
     }
@@ -273,13 +257,11 @@ class SalesInvoices extends AbstractAPI
      *
      * @see https://rmp-api.rik.ee/api.html#operation/get-sale_invoices_one_document_system
      *
-     * @param int $id Sale invoice identificator.
-     *
-     * @return mixed
+     * @param  int  $id  Sale invoice identificator.
      */
-    public function getSystemPdf( int $id ): mixed
+    public function getSystemPdf(int $id): mixed
     {
-        $response = $this->client->request( 'GET', 'sale_invoices/' . $id . '/pdf_system' );
+        $response = $this->client->request('GET', 'sale_invoices/'.$id.'/pdf_system');
 
         return $response;
     }
@@ -289,13 +271,11 @@ class SalesInvoices extends AbstractAPI
      *
      * @see https://rmp-api.rik.ee/api.html#operation/get-sale_invoices_one_document_user
      *
-     * @param int $id Sale invoice identificator.
-     *
-     * @return mixed
+     * @param  int  $id  Sale invoice identificator.
      */
-    public function getFile( int $id ): mixed
+    public function getFile(int $id): mixed
     {
-        $response = $this->client->request( 'GET', 'sale_invoices/' . $id . '/document_user' );
+        $response = $this->client->request('GET', 'sale_invoices/'.$id.'/document_user');
 
         return $response;
     }
@@ -305,15 +285,13 @@ class SalesInvoices extends AbstractAPI
      *
      * @see https://rmp-api.rik.ee/api.html#operation/put-sale_invoices_one_document_user
      *
-     * @param int $id Sale invoice identificator.
+     * @param  int  $id  Sale invoice identificator.
      * @param array<string,mixed>|array{
      *   "name": string,
      *   "contents": string,
      * } $parameters Base64-encoded file payload.
-     *
-     * @return mixed
      */
-    public function updateFile( int $id, array $parameters ): mixed
+    public function updateFile(int $id, array $parameters): mixed
     {
         $missingRequiredParameters = array_diff_key(
             array_flip(
@@ -325,8 +303,8 @@ class SalesInvoices extends AbstractAPI
             $parameters
         );
 
-        if ( count( $missingRequiredParameters ) !== 0 ) {
-            $missingKeys = implode( ', ', array_keys( $missingRequiredParameters ) );
+        if (count($missingRequiredParameters) !== 0) {
+            $missingKeys = implode(', ', array_keys($missingRequiredParameters));
 
             throw new \InvalidArgumentException(
                 "Missing required parameter(s): $missingKeys"
@@ -335,7 +313,7 @@ class SalesInvoices extends AbstractAPI
 
         $response = $this->client->request(
             'PUT',
-            'sale_invoices/' . $id . '/document_user',
+            'sale_invoices/'.$id.'/document_user',
             [],
             $parameters
         );
@@ -348,13 +326,11 @@ class SalesInvoices extends AbstractAPI
      *
      * @see https://rmp-api.rik.ee/api.html#operation/delete-sale_invoices_one_document_user
      *
-     * @param int $id Sale invoice identificator.
-     *
-     * @return mixed
+     * @param  int  $id  Sale invoice identificator.
      */
-    public function deleteFile( int $id ): mixed
+    public function deleteFile(int $id): mixed
     {
-        $response = $this->client->request( 'DELETE', 'sale_invoices/' . $id . '/document_user' );
+        $response = $this->client->request('DELETE', 'sale_invoices/'.$id.'/document_user');
 
         return $response;
     }
@@ -364,13 +340,11 @@ class SalesInvoices extends AbstractAPI
      *
      * @see https://rmp-api.rik.ee/api.html#operation/get-sale_invoices_one_delivery_opts
      *
-     * @param int $id Sale invoice identificator.
-     *
-     * @return mixed
+     * @param  int  $id  Sale invoice identificator.
      */
-    public function getDeliveryOptions( int $id ): mixed
+    public function getDeliveryOptions(int $id): mixed
     {
-        $response = $this->client->request( 'GET', 'sale_invoices/' . $id . '/delivery_options' );
+        $response = $this->client->request('GET', 'sale_invoices/'.$id.'/delivery_options');
 
         return $response;
     }
@@ -380,7 +354,7 @@ class SalesInvoices extends AbstractAPI
      *
      * @see https://rmp-api.rik.ee/api.html#operation/patch-sale_invoices_one_deliver
      *
-     * @param int $id Sale invoice identificator.
+     * @param  int  $id  Sale invoice identificator.
      * @param array<string,mixed>|array{
      *   "send_einvoice": bool,
      *   "send_email": bool,
@@ -388,10 +362,8 @@ class SalesInvoices extends AbstractAPI
      *   "email_subject": string,
      *   "email_body": string,
      * } $parameters
-     *
-     * @return mixed
      */
-    public function deliver( int $id, array $parameters ): mixed
+    public function deliver(int $id, array $parameters): mixed
     {
         $missingRequiredParameters = array_diff_key(
             array_flip(
@@ -403,8 +375,8 @@ class SalesInvoices extends AbstractAPI
             $parameters
         );
 
-        if ( count( $missingRequiredParameters ) !== 0 ) {
-            $missingKeys = implode( ', ', array_keys( $missingRequiredParameters ) );
+        if (count($missingRequiredParameters) !== 0) {
+            $missingKeys = implode(', ', array_keys($missingRequiredParameters));
 
             throw new \InvalidArgumentException(
                 "Missing required parameter(s): $missingKeys"
@@ -413,7 +385,7 @@ class SalesInvoices extends AbstractAPI
 
         $response = $this->client->request(
             'PATCH',
-            'sale_invoices/' . $id . '/deliver',
+            'sale_invoices/'.$id.'/deliver',
             [],
             $parameters
         );

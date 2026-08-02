@@ -2,7 +2,6 @@
 
 namespace EFinancialsClient;
 
-use EFinancialsClient\API;
 use GuzzleHttp\Client as GuzzleClient;
 use GuzzleHttp\Exception\RequestException;
 use Psr\Http\Message\ResponseInterface;
@@ -16,13 +15,13 @@ class Client
         private string $apiKeyId = '',
         private string $apiKeyPublic = '',
         private string $apiKeyPassword = '',
-        private string $apiUrl = "https://demo-rmp-api.rik.ee",
-        private string $apiVersion = "v1"
+        private string $apiUrl = 'https://demo-rmp-api.rik.ee',
+        private string $apiVersion = 'v1'
     ) {
         $this->httpClient = $httpClient ?? new GuzzleClient(
             [
                 'base_uri' => $this->apiUrl,
-                'headers'  => [
+                'headers' => [
                     'Content-Type' => 'application/json',
                 ],
             ]
@@ -33,17 +32,17 @@ class Client
      * Creates authorization key for HTTP header.
      * For more detailed description check e-Financials API doc.
      *
-     * @param string      $path Relative path of url request.
-     * @param string|null $queryTime UTC timestamp used in X-AUTH-QUERYTIME.
+     * @param  string  $path  Relative path of url request.
+     * @param  string|null  $queryTime  UTC timestamp used in X-AUTH-QUERYTIME.
      */
-    public function createAuthKey( string $path, ?string $queryTime = null ): string
+    public function createAuthKey(string $path, ?string $queryTime = null): string
     {
         $queryTime ??= $this->createAuthQuerytime();
-        $data = $this->apiKeyId . ':' . $queryTime . ':' . $path;
+        $data = $this->apiKeyId.':'.$queryTime.':'.$path;
         $key = $this->apiKeyPassword;
 
-        $requestSignature = base64_encode( hash_hmac( 'sha384', $data, $key, true ) );
-        $authKey = $this->apiKeyPublic . ':' . $requestSignature;
+        $requestSignature = base64_encode(hash_hmac('sha384', $data, $key, true));
+        $authKey = $this->apiKeyPublic.':'.$requestSignature;
 
         return $authKey;
     }
@@ -53,48 +52,47 @@ class Client
      */
     public function createAuthQuerytime(): string
     {
-        return gmdate( "Y-m-d\TH:i:s" );
+        return gmdate("Y-m-d\TH:i:s");
     }
 
     /**
      * The universal request method.
      *
-     * @param string               $method The HTTP method.
-     * @param string               $endpoint The relative path of the request.
-     * @param array<string, mixed> $query The query parameters.
-     * @param mixed[]              $body The body. Will be converted to JSON.
-     *
+     * @param  string  $method  The HTTP method.
+     * @param  string  $endpoint  The relative path of the request.
+     * @param  array<string, mixed>  $query  The query parameters.
+     * @param  mixed[]  $body  The body. Will be converted to JSON.
      * @return mixed The response as array, error, or null.
      */
-    public function request( string $method, string $endpoint, array $query = [], array $body = [] ): mixed
+    public function request(string $method, string $endpoint, array $query = [], array $body = []): mixed
     {
-        $endpoint = '/' . $this->apiVersion . '/' . $endpoint;
+        $endpoint = '/'.$this->apiVersion.'/'.$endpoint;
 
         $queryTime = $this->createAuthQuerytime();
-        $authKey   = $this->createAuthKey( $endpoint, $queryTime );
-        $headers   = [
+        $authKey = $this->createAuthKey($endpoint, $queryTime);
+        $headers = [
             'X-AUTH-QUERYTIME' => $queryTime,
-            'X-AUTH-KEY'       => $authKey,
+            'X-AUTH-KEY' => $authKey,
         ];
 
         $options = [
             'headers' => $headers,
         ];
 
-        if ( count( $query ) !== 0 ) {
+        if (count($query) !== 0) {
             $options['query'] = $query;
         }
 
-        if ( count( $body ) !== 0 ) {
+        if (count($body) !== 0) {
             $options['json'] = $body;
         }
 
         try {
-            $response = $this->httpClient->request( $method, $endpoint, $options );
-        } catch ( RequestException $e ) {
+            $response = $this->httpClient->request($method, $endpoint, $options);
+        } catch (RequestException $e) {
             $response = $e->getResponse();
 
-            if ( $response instanceof ResponseInterface ) {
+            if ($response instanceof ResponseInterface) {
                 return $response->getBody()->getContents();
             }
 
@@ -102,12 +100,12 @@ class Client
         }
 
         try {
-            $result = \json_decode( $response->getBody()->getContents(), true, flags: JSON_THROW_ON_ERROR );
-        } catch ( \ValueError $ve ) {
+            $result = \json_decode($response->getBody()->getContents(), true, flags: JSON_THROW_ON_ERROR);
+        } catch (\ValueError $ve) {
             return [
                 'internal_error' => $ve->getMessage(),
             ];
-        } catch ( \JsonException $je ) {
+        } catch (\JsonException $je) {
             return [
                 'internal_error' => $je->getMessage(),
             ];
@@ -118,76 +116,76 @@ class Client
 
     public function accountDimensions(): API\AccountDimensions
     {
-        return new API\AccountDimensions( $this );
+        return new API\AccountDimensions($this);
     }
 
     public function accounts(): API\Accounts
     {
-        return new API\Accounts( $this );
+        return new API\Accounts($this);
     }
 
     public function clients(): API\Clients
     {
-        return new API\Clients( $this );
+        return new API\Clients($this);
     }
 
     public function costProfitCentres(): API\CostProfitCentres
     {
-        return new API\CostProfitCentres( $this );
+        return new API\CostProfitCentres($this);
     }
 
     public function currencies(): API\Currencies
     {
-        return new API\Currencies( $this );
+        return new API\Currencies($this);
     }
 
     public function products(): API\Products
     {
-        return new API\Products( $this );
+        return new API\Products($this);
     }
 
     public function purchaseArticles(): API\PurchaseArticles
     {
-        return new API\PurchaseArticles( $this );
+        return new API\PurchaseArticles($this);
     }
 
     public function salesArticles(): API\SalesArticles
     {
-        return new API\SalesArticles( $this );
+        return new API\SalesArticles($this);
     }
 
     public function invoices(): API\Invoices
     {
-        return new API\Invoices( $this );
+        return new API\Invoices($this);
     }
 
     public function bank(): API\Bank
     {
-        return new API\Bank( $this );
+        return new API\Bank($this);
     }
 
     public function journals(): API\Journals
     {
-        return new API\Journals( $this );
+        return new API\Journals($this);
     }
 
     public function transactions(): API\Transactions
     {
-        return new API\Transactions( $this );
+        return new API\Transactions($this);
     }
 
     public function salesInvoices(): API\SalesInvoices
     {
-        return new API\SalesInvoices( $this );
+        return new API\SalesInvoices($this);
     }
 
     public function purchaseInvoices(): API\PurchaseInvoices
     {
-        return new API\PurchaseInvoices( $this );
+        return new API\PurchaseInvoices($this);
     }
 
     public function templates(): API\Templates
     {
-        return new API\Templates( $this );
+        return new API\Templates($this);
     }
 }

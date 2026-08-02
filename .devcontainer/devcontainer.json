@@ -2,35 +2,23 @@
 // README at: https://github.com/devcontainers/templates/tree/main/src/php
 {
 	"name": "PHP",
-	// Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
-	"image": "mcr.microsoft.com/devcontainers/php:0-8.1",
+	"image": "mcr.microsoft.com/devcontainers/php:1-8.2",
 
-	// Features to add to the dev container. More info: https://containers.dev/features.
-	// "features": {},
-
-	// Configure tool-specific properties.
 	"customizations": {
-		// Configure properties specific to VS Code.
 		"vscode": {
 			"settings": {
 				"phpstan.options": [ "--xdebug" ],
-				"phpstan.configFile": "phpstan.dist.neon,phpstan.neon.dist,phpstan.neon",
-				"psalm.psalmScriptPath": "vendor/bin/psalm-language-server"
+				"phpstan.configFile": "phpstan.dist.neon,phpstan.neon.dist,phpstan.neon"
 			},
 			"extensions": [
 				"streetsidesoftware.code-spell-checker",
-				"shevaua.phpcs",
 				"editorconfig.editorconfig",
 				"sanderronde.phpstan-vscode",
-				"getpsalm.psalm-vscode-plugin"
+				"open-southeners.laravel-pint"
 			]
 		}
 	},
 
-	// Use 'forwardPorts' to make a list of ports inside the container available locally.
-	// "forwardPorts": [8000],
-
-	// Use 'portsAttributes' to set default properties for specific forwarded ports. More info: https://code.visualstudio.com/docs/remote/devcontainerjson-reference.
 	"portsAttributes": {
 		"8000": {
 			"label": "Hello Remote World",
@@ -38,13 +26,8 @@
 		}
 	},
 
-	// Use 'postCreateCommand' to run commands after the container is created.
-	// "postCreateCommand": "sudo chmod a+x \"$(pwd)\" && sudo rm -rf /var/www/html && sudo ln -s \"$(pwd)\" /var/www/html"
 	"postCreateCommand": {
 		"xdebug-fix": "echo \"xdebug.log = ${containerWorkspaceFolder}/xdebug.log\" | sudo tee -a /usr/local/etc/php/conf.d/xdebug.ini > /dev/null",
 		"dependencies": "composer install"
 	}
-
-	// Uncomment to connect as root instead. More info: https://aka.ms/dev-containers-non-root.
-	// "remoteUser": "root"
 }

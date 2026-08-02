@@ -8,13 +8,11 @@ class Invoices extends AbstractAPI
      * Retrieve the invoice series list of the specified company.
      *
      * @see https://rmp-api.rik.ee/api.html#operation/get-invoice_series
-     *
-     * @return mixed
      */
     public function all(): mixed
     {
 
-        $response = $this->client->request( 'GET', 'invoice_series' );
+        $response = $this->client->request('GET', 'invoice_series');
 
         return $response;
     }
@@ -23,13 +21,11 @@ class Invoices extends AbstractAPI
      * Retrieve one specific invoice series of the specified company.
      *
      * @see https://rmp-api.rik.ee/api.html#operation/get-invoice_series_one
-     *
-     * @return mixed
      */
-    public function get( int $id ): mixed
+    public function get(int $id): mixed
     {
 
-        $response = $this->client->request( 'GET', 'invoice_series/' . $id );
+        $response = $this->client->request('GET', 'invoice_series/'.$id);
 
         return $response;
     }
@@ -47,10 +43,8 @@ class Invoices extends AbstractAPI
      *   "term_days": 28,
      *   "overdue_charge": 0.15,
      * } $parameters
-     *
-     * @return mixed
      */
-    public function create( array $parameters = [] ): mixed
+    public function create(array $parameters = []): mixed
     {
         $missingRequiredParameters = array_diff_key(
             array_flip(
@@ -65,8 +59,8 @@ class Invoices extends AbstractAPI
             $parameters
         );
 
-        if ( count( $missingRequiredParameters ) !== 0 ) {
-            $missingKeys = implode( ', ', array_keys( $missingRequiredParameters ) );
+        if (count($missingRequiredParameters) !== 0) {
+            $missingKeys = implode(', ', array_keys($missingRequiredParameters));
 
             throw new \InvalidArgumentException(
                 "Missing required parameter(s): $missingKeys"
@@ -96,10 +90,8 @@ class Invoices extends AbstractAPI
      *   "term_days": 28,
      *   "overdue_charge": 0.15,
      * } $parameters
-     *
-     * @return mixed
      */
-    public function update( int $id, array $parameters ): mixed
+    public function update(int $id, array $parameters): mixed
     {
 
         $missingParameters = array_diff_key(
@@ -115,8 +107,8 @@ class Invoices extends AbstractAPI
             $parameters
         );
 
-        if ( count( $missingParameters ) !== 0 ) {
-            $missingKeys = implode( ', ', array_keys( $missingParameters ) );
+        if (count($missingParameters) !== 0) {
+            $missingKeys = implode(', ', array_keys($missingParameters));
 
             throw new \InvalidArgumentException(
                 "Missing required parameter(s): $missingKeys"
@@ -125,7 +117,7 @@ class Invoices extends AbstractAPI
 
         $response = $this->client->request(
             'PATCH',
-            'invoice_series/' . $id,
+            'invoice_series/'.$id,
             [],
             $parameters
         );
@@ -138,13 +130,11 @@ class Invoices extends AbstractAPI
      *
      * @see https://rmp-api.rik.ee/api.html#operation/delete-invoice_series_one
      *
-     * @param int $id Invoice series identificator.
-     *
-     * @return mixed
+     * @param  int  $id  Invoice series identificator.
      */
-    public function delete( int $id ): mixed
+    public function delete(int $id): mixed
     {
-        $response = $this->client->request( 'DELETE', 'invoice_series/' . $id );
+        $response = $this->client->request('DELETE', 'invoice_series/'.$id);
 
         return $response;
     }
@@ -153,13 +143,11 @@ class Invoices extends AbstractAPI
      * Retrieve the invoice settings of the specified company.
      *
      * @see https://rmp-api.rik.ee/api.html#operation/get-invoice_info
-     *
-     * @return mixed
      */
     public function allSettings(): mixed
     {
 
-        $response = $this->client->request( 'GET', 'invoice_info' );
+        $response = $this->client->request('GET', 'invoice_info');
 
         return $response;
     }
@@ -183,10 +171,8 @@ class Invoices extends AbstractAPI
      *   "balance_email_body": string,
      *   "balance_document_footer": string
      * } $parameters
-     *
-     * @return mixed
      */
-    public function updateSettings( array $parameters ): mixed
+    public function updateSettings(array $parameters): mixed
     {
 
         $response = $this->client->request(

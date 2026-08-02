@@ -33,13 +33,27 @@ $client = new Client(
     // apiUrl: 'https://demo-rmp-api.rik.ee', // default demo
 );
 
-print_r( $client->clients()->all() );
-print_r( $client->salesInvoices()->all() );
-print_r( $client->journals()->all() );
-print_r( $client->transactions()->all() );
-print_r( $client->purchaseInvoices()->all() );
-print_r( $client->templates()->all() );
+print_r($client->clients()->all());
+print_r($client->salesInvoices()->all());
+print_r($client->journals()->all());
+print_r($client->transactions()->all());
+print_r($client->purchaseInvoices()->all());
+print_r($client->templates()->all());
 ```
+
+## Development
+
+Requires PHP 8.2+.
+
+```bash
+composer install
+composer test        # lint + types + type-coverage + unit
+composer lint        # Laravel Pint
+composer test:types  # PHPStan
+composer test:unit   # Pest
+```
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
 
 ## Available resources
 

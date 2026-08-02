@@ -8,13 +8,11 @@ class Bank extends AbstractAPI
      * Retrieve the bank account list of the specified company.
      *
      * @see https://rmp-api.rik.ee/api.html#operation/get-bank_accounts
-     *
-     * @return mixed
      */
     public function all(): mixed
     {
 
-        $response = $this->client->request( 'GET', 'bank_accounts' );
+        $response = $this->client->request('GET', 'bank_accounts');
 
         return $response;
     }
@@ -23,13 +21,11 @@ class Bank extends AbstractAPI
      * Retrieve one specific bank account of the specified company.
      *
      * @see https://rmp-api.rik.ee/api.html#operation/get-bank_accounts_one
-     *
-     * @return mixed
      */
-    public function get( int $id ): mixed
+    public function get(int $id): mixed
     {
 
-        $response = $this->client->request( 'GET', 'bank_accounts/' . $id );
+        $response = $this->client->request('GET', 'bank_accounts/'.$id);
 
         return $response;
     }
@@ -58,10 +54,8 @@ class Bank extends AbstractAPI
      *  "start_sum": null,
      *  "swift_code": "HABAEE2X"
      * } $parameters
-     *
-     * @return mixed
      */
-    public function create( array $parameters = [] ): mixed
+    public function create(array $parameters = []): mixed
     {
         $missingRequiredParameters = array_diff_key(
             array_flip(
@@ -73,8 +67,8 @@ class Bank extends AbstractAPI
             $parameters
         );
 
-        if ( count( $missingRequiredParameters ) !== 0 ) {
-            $missingKeys = implode( ', ', array_keys( $missingRequiredParameters ) );
+        if (count($missingRequiredParameters) !== 0) {
+            $missingKeys = implode(', ', array_keys($missingRequiredParameters));
 
             throw new \InvalidArgumentException(
                 "Missing required parameter(s): $missingKeys"
@@ -115,10 +109,8 @@ class Bank extends AbstractAPI
      *  "start_sum": null,
      *  "swift_code": "HABAEE2X"
      * } $parameters
-     *
-     * @return mixed
      */
-    public function update( int $id, array $parameters ): mixed
+    public function update(int $id, array $parameters): mixed
     {
 
         $missingParameters = array_diff_key(
@@ -131,8 +123,8 @@ class Bank extends AbstractAPI
             $parameters
         );
 
-        if ( count( $missingParameters ) !== 0 ) {
-            $missingKeys = implode( ', ', array_keys( $missingParameters ) );
+        if (count($missingParameters) !== 0) {
+            $missingKeys = implode(', ', array_keys($missingParameters));
 
             throw new \InvalidArgumentException(
                 "Missing required parameter(s): $missingKeys"
@@ -141,7 +133,7 @@ class Bank extends AbstractAPI
 
         $response = $this->client->request(
             'PATCH',
-            'bank_accounts/' . $id,
+            'bank_accounts/'.$id,
             [],
             $parameters
         );
@@ -154,13 +146,11 @@ class Bank extends AbstractAPI
      *
      * @see https://rmp-api.rik.ee/api.html#operation/patch-bank_accounts_one
      *
-     * @param int $id Bank account identificator.
-     *
-     * @return mixed
+     * @param  int  $id  Bank account identificator.
      */
-    public function delete( int $id ): mixed
+    public function delete(int $id): mixed
     {
-        $response = $this->client->request( 'DELETE', 'bank_accounts/' . $id );
+        $response = $this->client->request('DELETE', 'bank_accounts/'.$id);
 
         return $response;
     }
@@ -169,13 +159,11 @@ class Bank extends AbstractAPI
      * Retrieve the VAT information of the specified company.
      *
      * @see https://rmp-api.rik.ee/api.html#operation/get-vat_info
-     *
-     * @return mixed
      */
     public function getVatInfo(): mixed
     {
 
-        $response = $this->client->request( 'GET', 'vat_info' );
+        $response = $this->client->request('GET', 'vat_info');
 
         return $response;
     }

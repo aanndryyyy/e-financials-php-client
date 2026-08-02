@@ -11,28 +11,26 @@ class Products extends AbstractAPI
      *
      * @see https://rmp-api.rik.ee/api.html#operation/get-products
      *
-     * @param int             $page Page of responses to return.
-     * @param DateTime|string $modifiedSince Return only objects modified since provided timestamp.
-     *
-     * @return mixed
+     * @param  int  $page  Page of responses to return.
+     * @param  DateTime|string  $modifiedSince  Return only objects modified since provided timestamp.
      */
     public function all(int $page = 1, DateTime|string $modifiedSince = ''): mixed
     {
         $query = [];
 
-        if ( $page !== 1 ) {
+        if ($page !== 1) {
             $query['page'] = $page;
         }
 
-        if ( $modifiedSince !== '' ) {
+        if ($modifiedSince !== '') {
             // If $modifiedSince is a DateTime object, format it as an Atom string
             // Otherwise, assign keep it as date string.
             $query['modified_since'] = ($modifiedSince instanceof DateTime)
-                ? $modifiedSince -> format( \DateTimeInterface::ATOM )
+                ? $modifiedSince->format(\DateTimeInterface::ATOM)
                 : $modifiedSince;
         }
 
-        $response = $this->client->request( 'GET', 'products', $query );
+        $response = $this->client->request('GET', 'products', $query);
 
         return $response;
     }
@@ -42,13 +40,11 @@ class Products extends AbstractAPI
      *
      * @see https://rmp-api.rik.ee/api.html#operation/get-products_one
      *
-     * @param int $id Product identificator.
-     *
-     * @return mixed
+     * @param  int  $id  Product identificator.
      */
-    public function get( int $id ): mixed
+    public function get(int $id): mixed
     {
-        $response = $this->client->request( 'GET', 'products/' . $id );
+        $response = $this->client->request('GET', 'products/'.$id);
 
         return $response;
     }
@@ -58,8 +54,6 @@ class Products extends AbstractAPI
      *
      * @see https://rmp-api.rik.ee/api.html#operation/post-products
      *
-     * @param string              $name
-     * @param string              $code
      * @param array<string,mixed>|array{
      *   "activity_text": string,
      *   "amount": string,
@@ -82,22 +76,20 @@ class Products extends AbstractAPI
      *   "translations": array,
      *   "unit": "tk",
      * } $parameters
-     *
-     * @return mixed
      */
-    public function create( string $name, string $code, array $parameters = [] ): mixed
+    public function create(string $name, string $code, array $parameters = []): mixed
     {
 
         $required_parameters = [
-            "name" => $name,
-            "code" => $code,
+            'name' => $name,
+            'code' => $code,
         ];
 
         $response = $this->client->request(
             'POST',
             'products',
             [],
-            \array_merge( $required_parameters, $parameters )
+            \array_merge($required_parameters, $parameters)
         );
 
         return $response;
@@ -108,7 +100,7 @@ class Products extends AbstractAPI
      *
      * @see https://rmp-api.rik.ee/api.html#operation/patch-products_one
      *
-     * @param int $id Product identificator.
+     * @param  int  $id  Product identificator.
      * @param array<string,mixed>|array{
      *   "activity_text": string,
      *   "amount": string,
@@ -131,10 +123,8 @@ class Products extends AbstractAPI
      *   "translations": array,
      *   "unit": "tk",
      * } $parameters
-     *
-     * @return mixed
      */
-    public function update( int $id, array $parameters = [] ): mixed
+    public function update(int $id, array $parameters = []): mixed
     {
 
         $missingRequiredParameters = array_diff_key(
@@ -147,8 +137,8 @@ class Products extends AbstractAPI
             $parameters
         );
 
-        if ( count( $missingRequiredParameters ) !== 0 ) {
-            $missingKeys = implode( ', ', array_keys( $missingRequiredParameters ) );
+        if (count($missingRequiredParameters) !== 0) {
+            $missingKeys = implode(', ', array_keys($missingRequiredParameters));
 
             throw new \InvalidArgumentException(
                 "Missing required parameter(s): $missingKeys"
@@ -157,7 +147,7 @@ class Products extends AbstractAPI
 
         $response = $this->client->request(
             'PATCH',
-            'products/' . $id,
+            'products/'.$id,
             [],
             $parameters,
         );
@@ -170,13 +160,11 @@ class Products extends AbstractAPI
      *
      * @see https://rmp-api.rik.ee/api.html#operation/delete-products_one
      *
-     * @param int $id Product identificator.
-     *
-     * @return mixed
+     * @param  int  $id  Product identificator.
      */
-    public function delete( int $id ): mixed
+    public function delete(int $id): mixed
     {
-        $response = $this->client->request( 'DELETE', 'products/' . $id );
+        $response = $this->client->request('DELETE', 'products/'.$id);
 
         return $response;
     }
@@ -186,11 +174,11 @@ class Products extends AbstractAPI
      *
      * @see https://rmp-api.rik.ee/api.html#operation/patch-products_one_deactivate
      *
-     * @param int $id Product identificator.
+     * @param  int  $id  Product identificator.
      */
-    public function deactivate( int $id ): mixed
+    public function deactivate(int $id): mixed
     {
-        $response = $this->client->request( 'PATCH', 'products/' . $id . '/deactivate' );
+        $response = $this->client->request('PATCH', 'products/'.$id.'/deactivate');
 
         return $response;
     }
@@ -200,11 +188,11 @@ class Products extends AbstractAPI
      *
      * @see https://rmp-api.rik.ee/api.html#operation/patch-products_one_reactivate
      *
-     * @param int $id Product identificator.
+     * @param  int  $id  Product identificator.
      */
-    public function reactivate( int $id ): mixed
+    public function reactivate(int $id): mixed
     {
-        $response = $this->client->request( 'PATCH', 'products/' . $id . '/reactivate' );
+        $response = $this->client->request('PATCH', 'products/'.$id.'/reactivate');
 
         return $response;
     }
