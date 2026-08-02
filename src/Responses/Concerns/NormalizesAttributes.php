@@ -115,4 +115,32 @@ trait NormalizesAttributes
 
         return $list;
     }
+
+    /**
+     * @return array<string, string>
+     */
+    private static function stringMap(mixed $value): array
+    {
+        if (! is_array($value)) {
+            return [];
+        }
+
+        $map = [];
+
+        foreach ($value as $key => $item) {
+            $mapKey = is_string($key) ? $key : (string) $key;
+
+            if ($item === null) {
+                $map[$mapKey] = '';
+
+                continue;
+            }
+
+            if (is_string($item) || is_int($item) || is_float($item)) {
+                $map[$mapKey] = (string) $item;
+            }
+        }
+
+        return $map;
+    }
 }

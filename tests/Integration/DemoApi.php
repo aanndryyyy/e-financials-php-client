@@ -6,6 +6,7 @@ use EFinancialsClient\Responses\Bank\ListResponse as BankAccountsListResponse;
 use EFinancialsClient\Responses\Clients\ListResponse as ClientsListResponse;
 use EFinancialsClient\Responses\CostProfitCentres\ListResponse as CostProfitCentresListResponse;
 use EFinancialsClient\Responses\Currencies\ListResponse as CurrenciesListResponse;
+use EFinancialsClient\Responses\Products\ListResponse as ProductsListResponse;
 use EFinancialsClient\Responses\PurchaseArticles\ListResponse as PurchaseArticlesListResponse;
 use EFinancialsClient\Responses\SalesArticles\ListResponse as SalesArticlesListResponse;
 use EFinancialsClient\Responses\Templates\ListResponse as TemplatesListResponse;
@@ -44,7 +45,7 @@ it('validates demo api response shapes', function () {
     expect($client->accounts()->all())->toBeInstanceOf(AccountsListResponse::class)
         ->and($client->accountDimensions()->all())->toBeInstanceOf(AccountDimensionsListResponse::class)
         ->and($client->bank()->all())->toBeInstanceOf(BankAccountsListResponse::class)
-        ->and($client->products()->all())->toBeArray()
+        ->and($client->products()->all())->toBeInstanceOf(ProductsListResponse::class)
         ->and($client->costProfitCentres()->all())->toBeInstanceOf(CostProfitCentresListResponse::class)
         ->and($client->salesArticles()->all())->toBeInstanceOf(SalesArticlesListResponse::class)
         ->and($client->purchaseArticles()->all())->toBeInstanceOf(PurchaseArticlesListResponse::class)

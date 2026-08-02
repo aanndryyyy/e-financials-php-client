@@ -5,8 +5,14 @@ declare(strict_types=1);
 namespace EFinancialsClient\Resources;
 
 use DateTime;
+use DateTimeInterface;
 use EFinancialsClient\Resources\Concerns\Transportable;
+use EFinancialsClient\Responses\ApiResponse;
+use EFinancialsClient\Responses\Products\ListResponse;
+use EFinancialsClient\Responses\Products\ProductResponse;
 use EFinancialsClient\ValueObjects\Transporter\Payload;
+use EFinancialsClient\ValueObjects\Transporter\Response;
+use InvalidArgumentException;
 
 final class Products
 {
@@ -20,7 +26,7 @@ final class Products
      * @param  int  $page  Page of responses to return.
      * @param  DateTime|string  $modifiedSince  Return only objects modified since provided timestamp.
      */
-    public function all(int $page = 1, DateTime|string $modifiedSince = ''): mixed
+    public function all(int $page = 1, DateTime|string $modifiedSince = ''): ListResponse
     {
         $query = [];
 
@@ -29,17 +35,17 @@ final class Products
         }
 
         if ($modifiedSince !== '') {
-            // If $modifiedSince is a DateTime object, format it as an Atom string
-            // Otherwise, assign keep it as date string.
             $query['modified_since'] = ($modifiedSince instanceof DateTime)
-                ? $modifiedSince->format(\DateTimeInterface::ATOM)
+                ? $modifiedSince->format(DateTimeInterface::ATOM)
                 : $modifiedSince;
         }
 
         $payload = Payload::get('products', $query);
+
+        /** @var Response<array{current_page: int, total_pages: int, items: array<int, array<string, mixed>>}> $response */
         $response = $this->transporter->request($payload);
 
-        return $response->data();
+        return ListResponse::from($response->data());
     }
 
     /**
@@ -49,12 +55,14 @@ final class Products
      *
      * @param  int  $id  Product identificator.
      */
-    public function get(int $id): mixed
+    public function get(int $id): ProductResponse
     {
         $payload = Payload::get('products/'.$id);
+
+        /** @var Response<array<string, mixed>> $response */
         $response = $this->transporter->request($payload);
 
-        return $response->data();
+        return ProductResponse::from($response->data());
     }
 
     /**
@@ -62,41 +70,19 @@ final class Products
      *
      * @see https://rmp-api.rik.ee/api.html#operation/post-products
      *
-     * @param array<string,mixed>|array{
-     *   "activity_text": string,
-     *   "amount": string,
-     *   "cl_purchase_articles_id": null,
-     *   "cl_sale_articles_id": 1,
-     *   "description": null,
-     *   "emtak_code": null,
-     *   "emtak_version": null,
-     *   "foreign_names": array,
-     *   "id": int,
-     *   "is_deleted": false,
-     *   "net_price": null,
-     *   "notes": null,
-     *   "price_currency": "EUR",
-     *   "purchase_accounts_dimensions_id": null,
-     *   "purchase_accounts_id": null,
-     *   "sale_accounts_dimensions_id": null,
-     *   "sale_accounts_id": int,
-     *   "sales_price": int,
-     *   "translations": array,
-     *   "unit": "tk",
-     * } $parameters
+     * @param  array<string, mixed>  $parameters
      */
-    public function create(string $name, string $code, array $parameters = []): mixed
+    public function create(string $name, string $code, array $parameters = []): ApiResponse
     {
-
-        $required_parameters = [
+        $payload = Payload::post('products', array_merge([
             'name' => $name,
             'code' => $code,
-        ];
+        ], $parameters));
 
-        $payload = Payload::post('products', \array_merge($required_parameters, $parameters));
+        /** @var Response<array{code: int, messages?: array<int, string>, created_object_id?: int|null}> $response */
         $response = $this->transporter->request($payload);
 
-        return $response->data();
+        return ApiResponse::from($response->data());
     }
 
     /**
@@ -105,32 +91,10 @@ final class Products
      * @see https://rmp-api.rik.ee/api.html#operation/patch-products_one
      *
      * @param  int  $id  Product identificator.
-     * @param array<string,mixed>|array{
-     *   "activity_text": string,
-     *   "amount": string,
-     *   "cl_purchase_articles_id": null,
-     *   "cl_sale_articles_id": 1,
-     *   "description": null,
-     *   "emtak_code": null,
-     *   "emtak_version": null,
-     *   "foreign_names": array,
-     *   "id": int,
-     *   "is_deleted": false,
-     *   "net_price": null,
-     *   "notes": null,
-     *   "price_currency": "EUR",
-     *   "purchase_accounts_dimensions_id": null,
-     *   "purchase_accounts_id": null,
-     *   "sale_accounts_dimensions_id": null,
-     *   "sale_accounts_id": int,
-     *   "sales_price": int,
-     *   "translations": array,
-     *   "unit": "tk",
-     * } $parameters
+     * @param  array<string, mixed>  $parameters
      */
-    public function update(int $id, array $parameters = []): mixed
+    public function update(int $id, array $parameters = []): ApiResponse
     {
-
         $missingRequiredParameters = array_diff_key(
             array_flip(
                 [
@@ -144,15 +108,17 @@ final class Products
         if (count($missingRequiredParameters) !== 0) {
             $missingKeys = implode(', ', array_keys($missingRequiredParameters));
 
-            throw new \InvalidArgumentException(
+            throw new InvalidArgumentException(
                 "Missing required parameter(s): $missingKeys"
             );
         }
 
         $payload = Payload::patch('products/'.$id, $parameters);
+
+        /** @var Response<array{code: int, messages?: array<int, string>, created_object_id?: int|null}> $response */
         $response = $this->transporter->request($payload);
 
-        return $response->data();
+        return ApiResponse::from($response->data());
     }
 
     /**
@@ -162,12 +128,14 @@ final class Products
      *
      * @param  int  $id  Product identificator.
      */
-    public function delete(int $id): mixed
+    public function delete(int $id): ApiResponse
     {
         $payload = Payload::delete('products/'.$id);
+
+        /** @var Response<array{code: int, messages?: array<int, string>, created_object_id?: int|null}> $response */
         $response = $this->transporter->request($payload);
 
-        return $response->data();
+        return ApiResponse::from($response->data());
     }
 
     /**
@@ -177,12 +145,14 @@ final class Products
      *
      * @param  int  $id  Product identificator.
      */
-    public function deactivate(int $id): mixed
+    public function deactivate(int $id): ApiResponse
     {
         $payload = Payload::patch('products/'.$id.'/deactivate');
+
+        /** @var Response<array{code: int, messages?: array<int, string>, created_object_id?: int|null}> $response */
         $response = $this->transporter->request($payload);
 
-        return $response->data();
+        return ApiResponse::from($response->data());
     }
 
     /**
@@ -192,11 +162,13 @@ final class Products
      *
      * @param  int  $id  Product identificator.
      */
-    public function reactivate(int $id): mixed
+    public function reactivate(int $id): ApiResponse
     {
         $payload = Payload::patch('products/'.$id.'/reactivate');
+
+        /** @var Response<array{code: int, messages?: array<int, string>, created_object_id?: int|null}> $response */
         $response = $this->transporter->request($payload);
 
-        return $response->data();
+        return ApiResponse::from($response->data());
     }
 }

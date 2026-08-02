@@ -17,10 +17,13 @@ use EFinancialsClient\Responses\Clients\ClientResponse;
 use EFinancialsClient\Responses\Clients\ListResponse as ClientsListResponse;
 use EFinancialsClient\Responses\CostProfitCentres\ListResponse as CostProfitCentresListResponse;
 use EFinancialsClient\Responses\Currencies\ListResponse as CurrenciesListResponse;
+use EFinancialsClient\Responses\Products\ListResponse as ProductsListResponse;
+use EFinancialsClient\Responses\Products\ProductResponse;
 use EFinancialsClient\Testing\ClientFake;
 use EFinancialsClient\Testing\Responses\Fixtures\Accounts\AccountResponseFixture;
 use EFinancialsClient\Testing\Responses\Fixtures\Bank\BankAccountResponseFixture;
 use EFinancialsClient\Testing\Responses\Fixtures\Clients\ClientResponseFixture;
+use EFinancialsClient\Testing\Responses\Fixtures\Products\ProductResponseFixture;
 use EFinancialsClient\Transporters\HttpTransporter;
 use EFinancialsClient\ValueObjects\ApiCredentials;
 use EFinancialsClient\ValueObjects\Transporter\BaseUri;
@@ -56,7 +59,7 @@ it('returns decoded json from a successful request', function () {
 
     $client = new Client($transporter);
 
-    expect($client->products()->all())->toBe(['ok' => true]);
+    expect($client->journals()->all())->toBe(['ok' => true]);
 });
 
 it('throws a typed exception for http errors', function () {
@@ -70,7 +73,7 @@ it('throws a typed exception for http errors', function () {
     );
 
     $client = new Client($transporter);
-    $client->products()->all();
+    $client->journals()->all();
 })->throws(ErrorException::class, 'Unauthorized');
 
 it('exposes resource accessors', function () {
@@ -184,6 +187,37 @@ it('maps accounts and bank accounts to fuller OpenAPI projections', function () 
     $fake->assertSent('accounts', fn (Payload $payload): bool => $payload->method()->value === 'GET');
     $fake->assertSent('bank_accounts', fn (Payload $payload): bool => $payload->method()->value === 'GET');
     $fake->assertSent('projects', fn (Payload $payload): bool => $payload->method()->value === 'GET');
+});
+
+it('maps products to a fuller OpenAPI projection', function () {
+    $fake = new ClientFake([
+        ProductsListResponse::fake(),
+        ProductResponse::fake(),
+    ]);
+
+    $list = $fake->products()->all();
+
+    expect($list)->toBeInstanceOf(ProductsListResponse::class)
+        ->and($list->items)->toHaveCount(1)
+        ->and($list->items[0])->toBeInstanceOf(ProductResponse::class)
+        ->and($list->items[0]->id)->toBe(36166)
+        ->and($list->items[0]->name)->toBe('printer HP')
+        ->and($list->items[0]->code)->toBe('HP')
+        ->and($list->items[0]->salesPrice)->toBe(170.0)
+        ->and($list->items[0]->translations)->toBe(['products__name__1' => ''])
+        ->and($list->items[0]->isDeleted)->toBeFalse()
+        ->and($list->items[0]->toArray())->toBe(
+            ProductResponse::from(ProductResponseFixture::ATTRIBUTES)->toArray()
+        );
+
+    $product = $fake->products()->get(36166);
+
+    expect($product)->toBeInstanceOf(ProductResponse::class)
+        ->and($product->priceCurrency)->toBe('EUR')
+        ->and($product->unit)->toBe('tk');
+
+    $fake->assertSent('products', fn (Payload $payload): bool => $payload->method()->value === 'GET');
+    $fake->assertSent('products/36166', fn (Payload $payload): bool => $payload->method()->value === 'GET');
 });
 
 it('builds a client through the factory facade', function () {
