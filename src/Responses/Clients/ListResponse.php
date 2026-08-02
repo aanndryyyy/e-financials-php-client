@@ -9,12 +9,14 @@ use EFinancialsClient\Responses\Concerns\ArrayAccessible;
 use EFinancialsClient\Testing\Responses\Concerns\Fakeable;
 
 /**
- * @implements ResponseContract<array{current_page: int, total_pages: int, items: array<int, array<string, mixed>>}>
+ * @phpstan-import-type ClientData from ClientResponse
+ *
+ * @implements ResponseContract<array{current_page: int, total_pages: int, items: array<int, ClientData>}>
  */
 final class ListResponse implements ResponseContract
 {
     /**
-     * @use ArrayAccessible<array{current_page: int, total_pages: int, items: array<int, array<string, mixed>>}>
+     * @use ArrayAccessible<array{current_page: int, total_pages: int, items: array<int, ClientData>}>
      */
     use ArrayAccessible;
 

@@ -8,8 +8,11 @@ use EFinancialsClient\Resources\PurchaseInvoices;
 use EFinancialsClient\Resources\SalesInvoices;
 use EFinancialsClient\Resources\Templates;
 use EFinancialsClient\Resources\Transactions;
+use EFinancialsClient\Responses\Clients\ClientResponse;
+use EFinancialsClient\Responses\Clients\ListResponse as ClientsListResponse;
 use EFinancialsClient\Responses\Currencies\ListResponse as CurrenciesListResponse;
 use EFinancialsClient\Testing\ClientFake;
+use EFinancialsClient\Testing\Responses\Fixtures\Clients\ClientResponseFixture;
 use EFinancialsClient\Transporters\HttpTransporter;
 use EFinancialsClient\ValueObjects\ApiCredentials;
 use EFinancialsClient\ValueObjects\Transporter\BaseUri;
@@ -94,6 +97,39 @@ it('maps currencies to a typed list response', function () {
         ->and($response->data[0]->id)->toBe('EUR');
 
     $fake->assertSent('currencies', fn (Payload $payload): bool => $payload->method()->value === 'GET');
+});
+
+it('maps clients to a fuller OpenAPI projection', function () {
+    $fake = new ClientFake([
+        ClientsListResponse::fake(),
+        ClientResponse::fake(),
+    ]);
+
+    $list = $fake->clients()->all();
+
+    expect($list)->toBeInstanceOf(ClientsListResponse::class)
+        ->and($list->items)->toHaveCount(1)
+        ->and($list->items[0])->toBeInstanceOf(ClientResponse::class)
+        ->and($list->items[0]->id)->toBe(1916)
+        ->and($list->items[0]->name)->toBe('A24 Laen OÜ')
+        ->and($list->items[0]->code)->toBe('14168677')
+        ->and($list->items[0]->email)->toBeNull()
+        ->and($list->items[0]->isStaff)->toBeFalse()
+        ->and($list->items[0]->isDeleted)->toBeTrue()
+        ->and($list->items[0]->isJuridicalEntity)->toBeTrue()
+        ->and($list->items[0]->invoiceElectronicOpts)->toBe([])
+        ->and($list->items[0]->toArray())->toEqualCanonicalizing(ClientResponseFixture::ATTRIBUTES);
+
+    $client = $fake->clients()->get(1916);
+
+    expect($client)->toBeInstanceOf(ClientResponse::class)
+        ->and($client->id)->toBe(1916)
+        ->and($client->clInvoiceCountry)->toBe('EST')
+        ->and($client->isAssociateCompany)->toBeFalse()
+        ->and($client->isRelatedParty)->toBeFalse();
+
+    $fake->assertSent('clients', fn (Payload $payload): bool => $payload->method()->value === 'GET');
+    $fake->assertSent('clients/1916', fn (Payload $payload): bool => $payload->method()->value === 'GET');
 });
 
 it('builds a client through the factory facade', function () {
