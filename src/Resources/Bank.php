@@ -5,9 +5,13 @@ declare(strict_types=1);
 namespace EFinancialsClient\Resources;
 
 use EFinancialsClient\Resources\Concerns\Transportable;
+use EFinancialsClient\Responses\ApiResponse;
+use EFinancialsClient\Responses\Bank\BankAccountResponse;
+use EFinancialsClient\Responses\Bank\ListResponse;
 use EFinancialsClient\Responses\VatInfo\VatInfoResponse;
 use EFinancialsClient\ValueObjects\Transporter\Payload;
 use EFinancialsClient\ValueObjects\Transporter\Response;
+use InvalidArgumentException;
 
 final class Bank
 {
@@ -18,13 +22,17 @@ final class Bank
      *
      * @see https://rmp-api.rik.ee/api.html#operation/get-bank_accounts
      */
-    public function all(): mixed
+    public function all(): ListResponse
     {
-
         $payload = Payload::get('bank_accounts');
+
+        /** @var Response<array<int, array<array-key, mixed>>> $response */
         $response = $this->transporter->request($payload);
 
-        return $response->data();
+        /** @var array<int, array<array-key, mixed>> $data */
+        $data = $response->data();
+
+        return ListResponse::from($data);
     }
 
     /**
@@ -32,13 +40,14 @@ final class Bank
      *
      * @see https://rmp-api.rik.ee/api.html#operation/get-bank_accounts_one
      */
-    public function get(int $id): mixed
+    public function get(int $id): BankAccountResponse
     {
-
         $payload = Payload::get('bank_accounts/'.$id);
+
+        /** @var Response<array<array-key, mixed>> $response */
         $response = $this->transporter->request($payload);
 
-        return $response->data();
+        return BankAccountResponse::from($response->data());
     }
 
     /**
@@ -46,27 +55,9 @@ final class Bank
      *
      * @see https://rmp-api.rik.ee/api.html#operation/post-bank_accounts
      *
-     * @param array<string,mixed>|array{
-     *  "account_name_eng": "Swedbank AS EE123456780012345678",
-     *  "account_name_est": "Swedbank AS EE123456780012345678",
-     *  "account_no": "EE123456780012345678",
-     *  "accounts_dimensions_id": 2,
-     *  "bank_name": null,
-     *  "bank_regcode": null,
-     *  "beneficiary_name": null,
-     *  "cl_banks_id": 1,
-     *  "clients_id": 56,
-     *  "credit_limit": null,
-     *  "day_limit": null,
-     *  "default_salary_account": true,
-     *  "iban_code": "EE123456780012345678",
-     *  "id": 16,
-     *  "show_in_sale_invoices": true,
-     *  "start_sum": null,
-     *  "swift_code": "HABAEE2X"
-     * } $parameters
+     * @param  array<string, mixed>  $parameters
      */
-    public function create(array $parameters = []): mixed
+    public function create(array $parameters = []): ApiResponse
     {
         $missingRequiredParameters = array_diff_key(
             array_flip(
@@ -81,15 +72,17 @@ final class Bank
         if (count($missingRequiredParameters) !== 0) {
             $missingKeys = implode(', ', array_keys($missingRequiredParameters));
 
-            throw new \InvalidArgumentException(
+            throw new InvalidArgumentException(
                 "Missing required parameter(s): $missingKeys"
             );
         }
 
         $payload = Payload::post('bank_accounts', $parameters);
+
+        /** @var Response<array{code: int, messages?: array<int, string>, created_object_id?: int|null}> $response */
         $response = $this->transporter->request($payload);
 
-        return $response->data();
+        return ApiResponse::from($response->data());
     }
 
     /**
@@ -97,29 +90,10 @@ final class Bank
      *
      * @see https://rmp-api.rik.ee/api.html#operation/patch-bank_accounts_one
      *
-     * @param array<string,mixed>|array{
-     *  "account_name_eng": "Swedbank AS EE123456780012345678",
-     *  "account_name_est": "Swedbank AS EE123456780012345678",
-     *  "account_no": "EE123456780012345678",
-     *  "accounts_dimensions_id": 2,
-     *  "bank_name": null,
-     *  "bank_regcode": null,
-     *  "beneficiary_name": null,
-     *  "cl_banks_id": 1,
-     *  "clients_id": 56,
-     *  "credit_limit": null,
-     *  "day_limit": null,
-     *  "default_salary_account": true,
-     *  "iban_code": "EE123456780012345678",
-     *  "id": 16,
-     *  "show_in_sale_invoices": true,
-     *  "start_sum": null,
-     *  "swift_code": "HABAEE2X"
-     * } $parameters
+     * @param  array<string, mixed>  $parameters
      */
-    public function update(int $id, array $parameters): mixed
+    public function update(int $id, array $parameters): ApiResponse
     {
-
         $missingParameters = array_diff_key(
             array_flip(
                 [
@@ -133,30 +107,34 @@ final class Bank
         if (count($missingParameters) !== 0) {
             $missingKeys = implode(', ', array_keys($missingParameters));
 
-            throw new \InvalidArgumentException(
+            throw new InvalidArgumentException(
                 "Missing required parameter(s): $missingKeys"
             );
         }
 
         $payload = Payload::patch('bank_accounts/'.$id, $parameters);
+
+        /** @var Response<array{code: int, messages?: array<int, string>, created_object_id?: int|null}> $response */
         $response = $this->transporter->request($payload);
 
-        return $response->data();
+        return ApiResponse::from($response->data());
     }
 
     /**
      * Delete one specific bank account of the specified company.
      *
-     * @see https://rmp-api.rik.ee/api.html#operation/patch-bank_accounts_one
+     * @see https://rmp-api.rik.ee/api.html#operation/delete-bank_accounts_one
      *
      * @param  int  $id  Bank account identificator.
      */
-    public function delete(int $id): mixed
+    public function delete(int $id): ApiResponse
     {
         $payload = Payload::delete('bank_accounts/'.$id);
+
+        /** @var Response<array{code: int, messages?: array<int, string>, created_object_id?: int|null}> $response */
         $response = $this->transporter->request($payload);
 
-        return $response->data();
+        return ApiResponse::from($response->data());
     }
 
     /**

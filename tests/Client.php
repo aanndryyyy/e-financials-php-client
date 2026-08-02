@@ -8,10 +8,18 @@ use EFinancialsClient\Resources\PurchaseInvoices;
 use EFinancialsClient\Resources\SalesInvoices;
 use EFinancialsClient\Resources\Templates;
 use EFinancialsClient\Resources\Transactions;
+use EFinancialsClient\Responses\Accounts\AccountResponse;
+use EFinancialsClient\Responses\Accounts\ListResponse as AccountsListResponse;
+use EFinancialsClient\Responses\ApiFileResponse;
+use EFinancialsClient\Responses\Bank\BankAccountResponse;
+use EFinancialsClient\Responses\Bank\ListResponse as BankAccountsListResponse;
 use EFinancialsClient\Responses\Clients\ClientResponse;
 use EFinancialsClient\Responses\Clients\ListResponse as ClientsListResponse;
+use EFinancialsClient\Responses\CostProfitCentres\ListResponse as CostProfitCentresListResponse;
 use EFinancialsClient\Responses\Currencies\ListResponse as CurrenciesListResponse;
 use EFinancialsClient\Testing\ClientFake;
+use EFinancialsClient\Testing\Responses\Fixtures\Accounts\AccountResponseFixture;
+use EFinancialsClient\Testing\Responses\Fixtures\Bank\BankAccountResponseFixture;
 use EFinancialsClient\Testing\Responses\Fixtures\Clients\ClientResponseFixture;
 use EFinancialsClient\Transporters\HttpTransporter;
 use EFinancialsClient\ValueObjects\ApiCredentials;
@@ -48,7 +56,7 @@ it('returns decoded json from a successful request', function () {
 
     $client = new Client($transporter);
 
-    expect($client->accounts()->all())->toBe(['ok' => true]);
+    expect($client->products()->all())->toBe(['ok' => true]);
 });
 
 it('throws a typed exception for http errors', function () {
@@ -62,7 +70,7 @@ it('throws a typed exception for http errors', function () {
     );
 
     $client = new Client($transporter);
-    $client->accounts()->all();
+    $client->products()->all();
 })->throws(ErrorException::class, 'Unauthorized');
 
 it('exposes resource accessors', function () {
@@ -127,6 +135,55 @@ it('maps clients to a fuller OpenAPI projection', function () {
 
     $fake->assertSent('clients', fn (Payload $payload): bool => $payload->method()->value === 'GET');
     $fake->assertSent('clients/1916', fn (Payload $payload): bool => $payload->method()->value === 'GET');
+});
+
+it('maps accounts and bank accounts to fuller OpenAPI projections', function () {
+    $fake = new ClientFake([
+        AccountsListResponse::fake(),
+        BankAccountsListResponse::fake(),
+        BankAccountResponse::fake(),
+        CostProfitCentresListResponse::fake(),
+        ApiFileResponse::fake(),
+    ]);
+
+    $accounts = $fake->accounts()->all();
+
+    expect($accounts)->toBeInstanceOf(AccountsListResponse::class)
+        ->and($accounts->data[0])->toBeInstanceOf(AccountResponse::class)
+        ->and($accounts->data[0]->id)->toBe(1010)
+        ->and($accounts->data[0]->nameEst)->toBe('Sularaha kassas')
+        ->and($accounts->data[0]->clAccountGroups)->toBe(['AR', 'MTY', 'SA'])
+        ->and($accounts->data[0]->toArray())->toBe(
+            AccountResponse::from(AccountResponseFixture::ATTRIBUTES)->toArray()
+        );
+
+    $bankAccounts = $fake->bank()->all();
+
+    expect($bankAccounts)->toBeInstanceOf(BankAccountsListResponse::class)
+        ->and($bankAccounts->data[0]->accountNo)->toBe('EE123456780012345678');
+
+    $bankAccount = $fake->bank()->get(16);
+
+    expect($bankAccount)->toBeInstanceOf(BankAccountResponse::class)
+        ->and($bankAccount->toArray())->toBe(
+            BankAccountResponse::from(BankAccountResponseFixture::ATTRIBUTES)->toArray()
+        );
+
+    $centres = $fake->costProfitCentres()->all();
+
+    expect($centres)->toBeInstanceOf(CostProfitCentresListResponse::class)
+        ->and($centres->items[0]->name)->toBe('Elekter')
+        ->and($centres->items[0]->clProjectsType)->toBe('PROJECT');
+
+    $file = ApiFileResponse::fake();
+
+    expect($file)->toBeInstanceOf(ApiFileResponse::class)
+        ->and($file->name)->toBe('Arve_NX000001_20220109_TESTCLIENT.pdf')
+        ->and($file->contents)->toBe('JVBERi0xLjQK');
+
+    $fake->assertSent('accounts', fn (Payload $payload): bool => $payload->method()->value === 'GET');
+    $fake->assertSent('bank_accounts', fn (Payload $payload): bool => $payload->method()->value === 'GET');
+    $fake->assertSent('projects', fn (Payload $payload): bool => $payload->method()->value === 'GET');
 });
 
 it('builds a client through the factory facade', function () {

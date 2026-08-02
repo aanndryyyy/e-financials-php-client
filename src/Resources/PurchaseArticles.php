@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace EFinancialsClient\Resources;
 
 use EFinancialsClient\Resources\Concerns\Transportable;
+use EFinancialsClient\Responses\PurchaseArticles\ListResponse;
 use EFinancialsClient\ValueObjects\Transporter\Payload;
+use EFinancialsClient\ValueObjects\Transporter\Response;
 
 final class PurchaseArticles
 {
@@ -16,12 +18,16 @@ final class PurchaseArticles
      *
      * @see https://rmp-api.rik.ee/api.html#operation/get-purchase_articles
      */
-    public function all(): mixed
+    public function all(): ListResponse
     {
-
         $payload = Payload::get('purchase_articles');
+
+        /** @var Response<array<int, array<array-key, mixed>>> $response */
         $response = $this->transporter->request($payload);
 
-        return $response->data();
+        /** @var array<int, array<array-key, mixed>> $data */
+        $data = $response->data();
+
+        return ListResponse::from($data);
     }
 }
