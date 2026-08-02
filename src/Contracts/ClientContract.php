@@ -4,51 +4,51 @@ declare(strict_types=1);
 
 namespace EFinancialsClient\Contracts;
 
-use EFinancialsClient\Resources\AccountDimensions;
-use EFinancialsClient\Resources\Accounts;
-use EFinancialsClient\Resources\Bank;
-use EFinancialsClient\Resources\Clients;
-use EFinancialsClient\Resources\CostProfitCentres;
-use EFinancialsClient\Resources\Currencies;
-use EFinancialsClient\Resources\Invoices;
-use EFinancialsClient\Resources\Journals;
-use EFinancialsClient\Resources\Products;
-use EFinancialsClient\Resources\PurchaseArticles;
-use EFinancialsClient\Resources\PurchaseInvoices;
-use EFinancialsClient\Resources\SalesArticles;
-use EFinancialsClient\Resources\SalesInvoices;
-use EFinancialsClient\Resources\Templates;
-use EFinancialsClient\Resources\Transactions;
+use EFinancialsClient\Contracts\Resources\AccountDimensionsContract;
+use EFinancialsClient\Contracts\Resources\AccountsContract;
+use EFinancialsClient\Contracts\Resources\BankContract;
+use EFinancialsClient\Contracts\Resources\ClientsContract;
+use EFinancialsClient\Contracts\Resources\CostProfitCentresContract;
+use EFinancialsClient\Contracts\Resources\CurrenciesContract;
+use EFinancialsClient\Contracts\Resources\InvoicesContract;
+use EFinancialsClient\Contracts\Resources\JournalsContract;
+use EFinancialsClient\Contracts\Resources\ProductsContract;
+use EFinancialsClient\Contracts\Resources\PurchaseArticlesContract;
+use EFinancialsClient\Contracts\Resources\PurchaseInvoicesContract;
+use EFinancialsClient\Contracts\Resources\SalesArticlesContract;
+use EFinancialsClient\Contracts\Resources\SalesInvoicesContract;
+use EFinancialsClient\Contracts\Resources\TemplatesContract;
+use EFinancialsClient\Contracts\Resources\TransactionsContract;
 
 interface ClientContract
 {
-    public function accountDimensions(): AccountDimensions;
+    public function accountDimensions(): AccountDimensionsContract;
 
-    public function accounts(): Accounts;
+    public function accounts(): AccountsContract;
 
-    public function bank(): Bank;
+    public function bank(): BankContract;
 
-    public function clients(): Clients;
+    public function clients(): ClientsContract;
 
-    public function costProfitCentres(): CostProfitCentres;
+    public function costProfitCentres(): CostProfitCentresContract;
 
-    public function currencies(): Currencies;
+    public function currencies(): CurrenciesContract;
 
-    public function invoices(): Invoices;
+    public function invoices(): InvoicesContract;
 
-    public function journals(): Journals;
+    public function journals(): JournalsContract;
 
-    public function products(): Products;
+    public function products(): ProductsContract;
 
-    public function purchaseArticles(): PurchaseArticles;
+    public function purchaseArticles(): PurchaseArticlesContract;
 
-    public function purchaseInvoices(): PurchaseInvoices;
+    public function purchaseInvoices(): PurchaseInvoicesContract;
 
-    public function salesArticles(): SalesArticles;
+    public function salesArticles(): SalesArticlesContract;
 
-    public function salesInvoices(): SalesInvoices;
+    public function salesInvoices(): SalesInvoicesContract;
 
-    public function templates(): Templates;
+    public function templates(): TemplatesContract;
 
-    public function transactions(): Transactions;
+    public function transactions(): TransactionsContract;
 }

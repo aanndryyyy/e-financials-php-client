@@ -1,13 +1,13 @@
 <?php
 
 use EFinancialsClient\Client;
+use EFinancialsClient\Contracts\Resources\ClientsContract;
+use EFinancialsClient\Contracts\Resources\JournalsContract;
+use EFinancialsClient\Contracts\Resources\PurchaseInvoicesContract;
+use EFinancialsClient\Contracts\Resources\SalesInvoicesContract;
+use EFinancialsClient\Contracts\Resources\TemplatesContract;
+use EFinancialsClient\Contracts\Resources\TransactionsContract;
 use EFinancialsClient\Exceptions\ErrorException;
-use EFinancialsClient\Resources\Clients;
-use EFinancialsClient\Resources\Journals;
-use EFinancialsClient\Resources\PurchaseInvoices;
-use EFinancialsClient\Resources\SalesInvoices;
-use EFinancialsClient\Resources\Templates;
-use EFinancialsClient\Resources\Transactions;
 use EFinancialsClient\Responses\Accounts\AccountResponse;
 use EFinancialsClient\Responses\Accounts\ListResponse as AccountsListResponse;
 use EFinancialsClient\Responses\ApiFileResponse;
@@ -84,12 +84,12 @@ it('exposes resource accessors', function () {
         ->withHttpClient(HttpClientFake::sequence([]))
         ->make();
 
-    expect($client->clients())->toBeInstanceOf(Clients::class)
-        ->and($client->journals())->toBeInstanceOf(Journals::class)
-        ->and($client->salesInvoices())->toBeInstanceOf(SalesInvoices::class)
-        ->and($client->purchaseInvoices())->toBeInstanceOf(PurchaseInvoices::class)
-        ->and($client->transactions())->toBeInstanceOf(Transactions::class)
-        ->and($client->templates())->toBeInstanceOf(Templates::class);
+    expect($client->clients())->toBeInstanceOf(ClientsContract::class)
+        ->and($client->journals())->toBeInstanceOf(JournalsContract::class)
+        ->and($client->salesInvoices())->toBeInstanceOf(SalesInvoicesContract::class)
+        ->and($client->purchaseInvoices())->toBeInstanceOf(PurchaseInvoicesContract::class)
+        ->and($client->transactions())->toBeInstanceOf(TransactionsContract::class)
+        ->and($client->templates())->toBeInstanceOf(TemplatesContract::class);
 });
 
 it('maps currencies to a typed list response', function () {

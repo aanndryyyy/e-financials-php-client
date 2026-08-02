@@ -6,12 +6,13 @@ namespace EFinancialsClient\Resources;
 
 use DateTime;
 use DateTimeInterface;
+use EFinancialsClient\Contracts\Resources\CostProfitCentresContract;
 use EFinancialsClient\Resources\Concerns\Transportable;
 use EFinancialsClient\Responses\CostProfitCentres\ListResponse;
 use EFinancialsClient\ValueObjects\Transporter\Payload;
 use EFinancialsClient\ValueObjects\Transporter\Response;
 
-final class CostProfitCentres
+final class CostProfitCentres implements CostProfitCentresContract
 {
     use Transportable;
 

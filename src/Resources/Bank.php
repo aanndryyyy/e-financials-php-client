@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace EFinancialsClient\Resources;
 
+use EFinancialsClient\Contracts\Resources\BankContract;
 use EFinancialsClient\Resources\Concerns\Transportable;
 use EFinancialsClient\Responses\ApiResponse;
 use EFinancialsClient\Responses\Bank\BankAccountResponse;
@@ -13,7 +14,7 @@ use EFinancialsClient\ValueObjects\Transporter\Payload;
 use EFinancialsClient\ValueObjects\Transporter\Response;
 use InvalidArgumentException;
 
-final class Bank
+final class Bank implements BankContract
 {
     use Transportable;
 
