@@ -1,0 +1,8 @@
+{
+  "name": "e-financials-php-client",
+  "build": {
+    "dockerfile": "Dockerfile",
+    "context": "."
+  },
+  "install": "composer update --prefer-stable --no-interaction --prefer-dist"
+}
