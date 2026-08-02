@@ -9,20 +9,17 @@ use EFinancialsClient\Responses\Concerns\ArrayAccessible;
 use EFinancialsClient\Testing\Responses\Concerns\Fakeable;
 
 /**
- * @implements ResponseContract<array<string, mixed>>
+ * @implements ResponseContract<array{id: int, name: string, is_client: bool, is_supplier: bool, code: string|null, cl_code_country: string|null, is_member: bool, send_invoice_to_email: bool, send_invoice_to_accounting_email: bool, is_deleted: bool}>
  */
 final class ClientResponse implements ResponseContract
 {
     /**
-     * @use ArrayAccessible<array<string, mixed>>
+     * @use ArrayAccessible<array{id: int, name: string, is_client: bool, is_supplier: bool, code: string|null, cl_code_country: string|null, is_member: bool, send_invoice_to_email: bool, send_invoice_to_accounting_email: bool, is_deleted: bool}>
      */
     use ArrayAccessible;
 
     use Fakeable;
 
-    /**
-     * @param  array<string, mixed>  $attributes
-     */
     private function __construct(
         public readonly int $id,
         public readonly string $name,
@@ -34,7 +31,6 @@ final class ClientResponse implements ResponseContract
         public readonly bool $sendInvoiceToEmail,
         public readonly bool $sendInvoiceToAccountingEmail,
         public readonly bool $isDeleted,
-        private readonly array $attributes,
     ) {}
 
     /**
@@ -62,7 +58,6 @@ final class ClientResponse implements ResponseContract
             (bool) ($attributes['send_invoice_to_email'] ?? false),
             (bool) ($attributes['send_invoice_to_accounting_email'] ?? false),
             (bool) ($attributes['is_deleted'] ?? false),
-            $attributes,
         );
     }
 
@@ -71,6 +66,17 @@ final class ClientResponse implements ResponseContract
      */
     public function toArray(): array
     {
-        return $this->attributes;
+        return [
+            'id' => $this->id,
+            'name' => $this->name,
+            'is_client' => $this->isClient,
+            'is_supplier' => $this->isSupplier,
+            'code' => $this->code,
+            'cl_code_country' => $this->clCodeCountry,
+            'is_member' => $this->isMember,
+            'send_invoice_to_email' => $this->sendInvoiceToEmail,
+            'send_invoice_to_accounting_email' => $this->sendInvoiceToAccountingEmail,
+            'is_deleted' => $this->isDeleted,
+        ];
     }
 }
