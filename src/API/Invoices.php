@@ -134,6 +134,22 @@ class Invoices extends AbstractAPI
     }
 
     /**
+     * Delete one specific invoice series of the specified company.
+     *
+     * @see https://rmp-api.rik.ee/api.html#operation/delete-invoice_series_one
+     *
+     * @param int $id Invoice series identificator.
+     *
+     * @return mixed
+     */
+    public function delete( int $id ): mixed
+    {
+        $response = $this->client->request( 'DELETE', 'invoice_series/' . $id );
+
+        return $response;
+    }
+
+    /**
      * Retrieve the invoice settings of the specified company.
      *
      * @see https://rmp-api.rik.ee/api.html#operation/get-invoice_info
