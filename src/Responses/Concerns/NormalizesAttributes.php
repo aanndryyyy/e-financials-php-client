@@ -91,4 +91,28 @@ trait NormalizesAttributes
     {
         return self::boolOrNull($value) ?? $default;
     }
+
+    /**
+     * @return array<int, string>
+     */
+    private static function stringList(mixed $value): array
+    {
+        if (! is_array($value)) {
+            return [];
+        }
+
+        $list = [];
+
+        foreach ($value as $item) {
+            $string = self::stringOrNull($item);
+
+            if ($string === null) {
+                continue;
+            }
+
+            $list[] = $string;
+        }
+
+        return $list;
+    }
 }

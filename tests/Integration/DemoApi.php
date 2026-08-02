@@ -1,7 +1,13 @@
 <?php
 
+use EFinancialsClient\Responses\AccountDimensions\ListResponse as AccountDimensionsListResponse;
+use EFinancialsClient\Responses\Accounts\ListResponse as AccountsListResponse;
+use EFinancialsClient\Responses\Bank\ListResponse as BankAccountsListResponse;
 use EFinancialsClient\Responses\Clients\ListResponse as ClientsListResponse;
+use EFinancialsClient\Responses\CostProfitCentres\ListResponse as CostProfitCentresListResponse;
 use EFinancialsClient\Responses\Currencies\ListResponse as CurrenciesListResponse;
+use EFinancialsClient\Responses\PurchaseArticles\ListResponse as PurchaseArticlesListResponse;
+use EFinancialsClient\Responses\SalesArticles\ListResponse as SalesArticlesListResponse;
 use EFinancialsClient\Responses\Templates\ListResponse as TemplatesListResponse;
 use EFinancialsClient\Responses\VatInfo\VatInfoResponse;
 
@@ -35,13 +41,13 @@ it('validates demo api response shapes', function () {
     $vatInfo = $client->bank()->getVatInfo();
     expect($vatInfo)->toBeInstanceOf(VatInfoResponse::class);
 
-    expect($client->accounts()->all())->toBeArray()
-        ->and($client->accountDimensions()->all())->toBeArray()
-        ->and($client->bank()->all())->toBeArray()
+    expect($client->accounts()->all())->toBeInstanceOf(AccountsListResponse::class)
+        ->and($client->accountDimensions()->all())->toBeInstanceOf(AccountDimensionsListResponse::class)
+        ->and($client->bank()->all())->toBeInstanceOf(BankAccountsListResponse::class)
         ->and($client->products()->all())->toBeArray()
-        ->and($client->costProfitCentres()->all())->toBeArray()
-        ->and($client->salesArticles()->all())->toBeArray()
-        ->and($client->purchaseArticles()->all())->toBeArray()
+        ->and($client->costProfitCentres()->all())->toBeInstanceOf(CostProfitCentresListResponse::class)
+        ->and($client->salesArticles()->all())->toBeInstanceOf(SalesArticlesListResponse::class)
+        ->and($client->purchaseArticles()->all())->toBeInstanceOf(PurchaseArticlesListResponse::class)
         ->and($client->invoices()->all())->toBeArray()
         ->and($client->invoices()->allSettings())->toBeArray()
         ->and($client->journals()->all())->toBeArray()

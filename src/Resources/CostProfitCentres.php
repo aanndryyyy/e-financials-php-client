@@ -5,8 +5,11 @@ declare(strict_types=1);
 namespace EFinancialsClient\Resources;
 
 use DateTime;
+use DateTimeInterface;
 use EFinancialsClient\Resources\Concerns\Transportable;
+use EFinancialsClient\Responses\CostProfitCentres\ListResponse;
 use EFinancialsClient\ValueObjects\Transporter\Payload;
+use EFinancialsClient\ValueObjects\Transporter\Response;
 
 final class CostProfitCentres
 {
@@ -20,7 +23,7 @@ final class CostProfitCentres
      * @param  int  $page  Page of responses to return.
      * @param  DateTime|string  $modifiedSince  Return only objects modified since provided timestamp.
      */
-    public function all(int $page = 1, DateTime|string $modifiedSince = ''): mixed
+    public function all(int $page = 1, DateTime|string $modifiedSince = ''): ListResponse
     {
         $query = [];
 
@@ -30,13 +33,15 @@ final class CostProfitCentres
 
         if ($modifiedSince !== '') {
             $query['modified_since'] = ($modifiedSince instanceof DateTime)
-                ? $modifiedSince->format(\DateTimeInterface::ATOM)
+                ? $modifiedSince->format(DateTimeInterface::ATOM)
                 : $modifiedSince;
         }
 
         $payload = Payload::get('projects', $query);
+
+        /** @var Response<array{current_page: int, total_pages: int, items: array<int, array<array-key, mixed>>}> $response */
         $response = $this->transporter->request($payload);
 
-        return $response->data();
+        return ListResponse::from($response->data());
     }
 }
