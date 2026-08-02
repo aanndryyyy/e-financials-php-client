@@ -17,6 +17,9 @@ use EFinancialsClient\Responses\Clients\ClientResponse;
 use EFinancialsClient\Responses\Clients\ListResponse as ClientsListResponse;
 use EFinancialsClient\Responses\CostProfitCentres\ListResponse as CostProfitCentresListResponse;
 use EFinancialsClient\Responses\Currencies\ListResponse as CurrenciesListResponse;
+use EFinancialsClient\Responses\Invoices\InvoiceInfoResponse;
+use EFinancialsClient\Responses\Invoices\InvoiceSeriesResponse;
+use EFinancialsClient\Responses\Invoices\ListResponse as InvoicesListResponse;
 use EFinancialsClient\Responses\Journals\JournalResponse;
 use EFinancialsClient\Responses\Journals\ListResponse as JournalsListResponse;
 use EFinancialsClient\Responses\Journals\PostingResponse;
@@ -28,6 +31,8 @@ use EFinancialsClient\Testing\ClientFake;
 use EFinancialsClient\Testing\Responses\Fixtures\Accounts\AccountResponseFixture;
 use EFinancialsClient\Testing\Responses\Fixtures\Bank\BankAccountResponseFixture;
 use EFinancialsClient\Testing\Responses\Fixtures\Clients\ClientResponseFixture;
+use EFinancialsClient\Testing\Responses\Fixtures\Invoices\InvoiceInfoResponseFixture;
+use EFinancialsClient\Testing\Responses\Fixtures\Invoices\InvoiceSeriesResponseFixture;
 use EFinancialsClient\Testing\Responses\Fixtures\Journals\JournalResponseFixture;
 use EFinancialsClient\Testing\Responses\Fixtures\Products\ProductResponseFixture;
 use EFinancialsClient\Testing\Responses\Fixtures\Transactions\TransactionResponseFixture;
@@ -225,6 +230,46 @@ it('maps products to a fuller OpenAPI projection', function () {
 
     $fake->assertSent('products', fn (Payload $payload): bool => $payload->method()->value === 'GET');
     $fake->assertSent('products/36166', fn (Payload $payload): bool => $payload->method()->value === 'GET');
+});
+
+it('maps invoice series and invoice info to fuller OpenAPI projections', function () {
+    $fake = new ClientFake([
+        InvoicesListResponse::fake(),
+        InvoiceSeriesResponse::fake(),
+        InvoiceInfoResponse::fake(),
+    ]);
+
+    $list = $fake->invoices()->all();
+
+    expect($list)->toBeInstanceOf(InvoicesListResponse::class)
+        ->and($list->data)->toHaveCount(1)
+        ->and($list->data[0])->toBeInstanceOf(InvoiceSeriesResponse::class)
+        ->and($list->data[0]->id)->toBe(3)
+        ->and($list->data[0]->numberPrefix)->toBe('NX')
+        ->and($list->data[0]->overdueCharge)->toBe(0.15)
+        ->and($list->data[0]->toArray())->toBe(
+            InvoiceSeriesResponse::from(InvoiceSeriesResponseFixture::ATTRIBUTES)->toArray()
+        );
+
+    $series = $fake->invoices()->get(3);
+
+    expect($series)->toBeInstanceOf(InvoiceSeriesResponse::class)
+        ->and($series->termDays)->toBe(28)
+        ->and($series->isDefault)->toBeFalse();
+
+    $info = $fake->invoices()->allSettings();
+
+    expect($info)->toBeInstanceOf(InvoiceInfoResponse::class)
+        ->and($info->email)->toBe('test@mail.ee')
+        ->and($info->clTemplatesId)->toBe(1)
+        ->and($info->invoiceCompanyName)->toBeNull()
+        ->and($info->toArray())->toBe(
+            InvoiceInfoResponse::from(InvoiceInfoResponseFixture::ATTRIBUTES)->toArray()
+        );
+
+    $fake->assertSent('invoice_series');
+    $fake->assertSent('invoice_series/3');
+    $fake->assertSent('invoice_info');
 });
 
 it('maps journals to a fuller OpenAPI projection', function () {

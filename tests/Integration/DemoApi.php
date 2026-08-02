@@ -6,6 +6,8 @@ use EFinancialsClient\Responses\Bank\ListResponse as BankAccountsListResponse;
 use EFinancialsClient\Responses\Clients\ListResponse as ClientsListResponse;
 use EFinancialsClient\Responses\CostProfitCentres\ListResponse as CostProfitCentresListResponse;
 use EFinancialsClient\Responses\Currencies\ListResponse as CurrenciesListResponse;
+use EFinancialsClient\Responses\Invoices\InvoiceInfoResponse;
+use EFinancialsClient\Responses\Invoices\ListResponse as InvoicesListResponse;
 use EFinancialsClient\Responses\Journals\ListResponse as JournalsListResponse;
 use EFinancialsClient\Responses\Products\ListResponse as ProductsListResponse;
 use EFinancialsClient\Responses\PurchaseArticles\ListResponse as PurchaseArticlesListResponse;
@@ -51,8 +53,8 @@ it('validates demo api response shapes', function () {
         ->and($client->costProfitCentres()->all())->toBeInstanceOf(CostProfitCentresListResponse::class)
         ->and($client->salesArticles()->all())->toBeInstanceOf(SalesArticlesListResponse::class)
         ->and($client->purchaseArticles()->all())->toBeInstanceOf(PurchaseArticlesListResponse::class)
-        ->and($client->invoices()->all())->toBeArray()
-        ->and($client->invoices()->allSettings())->toBeArray()
+        ->and($client->invoices()->all())->toBeInstanceOf(InvoicesListResponse::class)
+        ->and($client->invoices()->allSettings())->toBeInstanceOf(InvoiceInfoResponse::class)
         ->and($client->journals()->all())->toBeInstanceOf(JournalsListResponse::class)
         ->and($client->transactions()->all())->toBeInstanceOf(TransactionsListResponse::class)
         ->and($client->salesInvoices()->all())->toBeArray()

@@ -4,6 +4,11 @@ declare(strict_types=1);
 
 namespace EFinancialsClient\Contracts\Resources;
 
+use EFinancialsClient\Responses\ApiResponse;
+use EFinancialsClient\Responses\Invoices\InvoiceInfoResponse;
+use EFinancialsClient\Responses\Invoices\InvoiceSeriesResponse;
+use EFinancialsClient\Responses\Invoices\ListResponse;
+
 interface InvoicesContract
 {
     /**
@@ -11,46 +16,32 @@ interface InvoicesContract
      *
      * @see https://rmp-api.rik.ee/api.html#operation/get-invoice_series
      */
-    public function all(): mixed;
+    public function all(): ListResponse;
 
     /**
      * Retrieve one specific invoice series of the specified company.
      *
      * @see https://rmp-api.rik.ee/api.html#operation/get-invoice_series_one
      */
-    public function get(int $id): mixed;
+    public function get(int $id): InvoiceSeriesResponse;
 
     /**
      * Create a new invoice series of the specified company.
      *
-     * @see https://rmp-api.rik.ee/api.html#operation/get-invoice_series
+     * @see https://rmp-api.rik.ee/api.html#operation/post-invoice_series
      *
-     * @param array<string,mixed>|array{
-     *   "is_active": true,
-     *   "is_default": false,
-     *   "number_prefix": string,
-     *   "number_start_value": 1,
-     *   "term_days": 28,
-     *   "overdue_charge": 0.15,
-     * } $parameters
+     * @param  array<string, mixed>  $parameters
      */
-    public function create(array $parameters = []): mixed;
+    public function create(array $parameters = []): ApiResponse;
 
     /**
      * Modify one specific invoice series of the specified company.
      *
      * @see https://rmp-api.rik.ee/api.html#operation/patch-invoice_series_one
      *
-     * @param array<string,mixed>|array{
-     *   "is_active": true,
-     *   "is_default": false,
-     *   "number_prefix": string,
-     *   "number_start_value": 1,
-     *   "term_days": 28,
-     *   "overdue_charge": 0.15,
-     * } $parameters
+     * @param  array<string, mixed>  $parameters
      */
-    public function update(int $id, array $parameters): mixed;
+    public function update(int $id, array $parameters): ApiResponse;
 
     /**
      * Delete one specific invoice series of the specified company.
@@ -59,34 +50,21 @@ interface InvoicesContract
      *
      * @param  int  $id  Invoice series identificator.
      */
-    public function delete(int $id): mixed;
+    public function delete(int $id): ApiResponse;
 
     /**
      * Retrieve the invoice settings of the specified company.
      *
      * @see https://rmp-api.rik.ee/api.html#operation/get-invoice_info
      */
-    public function allSettings(): mixed;
+    public function allSettings(): InvoiceInfoResponse;
 
     /**
      * Update the invoice settings of the specified company.
      *
      * @see https://rmp-api.rik.ee/api.html#operation/patch-invoice_info
      *
-     * @param array<string,mixed>|array{
-     *   "address": string,
-     *   "email": string,
-     *   "phone": string,
-     *   "fax": string,
-     *   "webpage": string,
-     *   "cl_templates_id": 1,
-     *   "invoice_company_name": string,
-     *   "invoice_email_subject": string,
-     *   "invoice_email_body": string,
-     *   "balance_email_subject": string,
-     *   "balance_email_body": string,
-     *   "balance_document_footer": string
-     * } $parameters
+     * @param  array<string, mixed>  $parameters
      */
-    public function updateSettings(array $parameters): mixed;
+    public function updateSettings(array $parameters): ApiResponse;
 }
