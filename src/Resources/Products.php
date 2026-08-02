@@ -12,6 +12,7 @@ use EFinancialsClient\Responses\ApiResponse;
 use EFinancialsClient\Responses\Products\ListResponse;
 use EFinancialsClient\Responses\Products\ProductResponse;
 use EFinancialsClient\ValueObjects\Transporter\Payload;
+use EFinancialsClient\ValueObjects\Transporter\ResourcePath;
 use EFinancialsClient\ValueObjects\Transporter\Response;
 use InvalidArgumentException;
 
@@ -41,7 +42,7 @@ final class Products implements ProductsContract
                 : $modifiedSince;
         }
 
-        $payload = Payload::get('products', $query);
+        $payload = Payload::get(ResourcePath::collection('products'), $query);
 
         /** @var Response<array{current_page: int, total_pages: int, items: array<int, array<string, mixed>>}> $response */
         $response = $this->transporter->request($payload);
@@ -58,7 +59,7 @@ final class Products implements ProductsContract
      */
     public function get(int $id): ProductResponse
     {
-        $payload = Payload::get('products/'.$id);
+        $payload = Payload::get(ResourcePath::one('products', $id));
 
         /** @var Response<array<string, mixed>> $response */
         $response = $this->transporter->request($payload);
@@ -75,7 +76,7 @@ final class Products implements ProductsContract
      */
     public function create(string $name, string $code, array $parameters = []): ApiResponse
     {
-        $payload = Payload::post('products', array_merge([
+        $payload = Payload::post(ResourcePath::collection('products'), array_merge([
             'name' => $name,
             'code' => $code,
         ], $parameters));
@@ -114,7 +115,7 @@ final class Products implements ProductsContract
             );
         }
 
-        $payload = Payload::patch('products/'.$id, $parameters);
+        $payload = Payload::patch(ResourcePath::one('products', $id), $parameters);
 
         /** @var Response<array{code: int, messages?: array<int, string>, created_object_id?: int|null}> $response */
         $response = $this->transporter->request($payload);
@@ -131,7 +132,7 @@ final class Products implements ProductsContract
      */
     public function delete(int $id): ApiResponse
     {
-        $payload = Payload::delete('products/'.$id);
+        $payload = Payload::delete(ResourcePath::one('products', $id));
 
         /** @var Response<array{code: int, messages?: array<int, string>, created_object_id?: int|null}> $response */
         $response = $this->transporter->request($payload);
@@ -148,7 +149,7 @@ final class Products implements ProductsContract
      */
     public function deactivate(int $id): ApiResponse
     {
-        $payload = Payload::patch('products/'.$id.'/deactivate');
+        $payload = Payload::patch(ResourcePath::one('products', $id, 'deactivate'));
 
         /** @var Response<array{code: int, messages?: array<int, string>, created_object_id?: int|null}> $response */
         $response = $this->transporter->request($payload);
@@ -165,7 +166,7 @@ final class Products implements ProductsContract
      */
     public function reactivate(int $id): ApiResponse
     {
-        $payload = Payload::patch('products/'.$id.'/reactivate');
+        $payload = Payload::patch(ResourcePath::one('products', $id, 'reactivate'));
 
         /** @var Response<array{code: int, messages?: array<int, string>, created_object_id?: int|null}> $response */
         $response = $this->transporter->request($payload);

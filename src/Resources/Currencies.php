@@ -8,6 +8,7 @@ use EFinancialsClient\Contracts\Resources\CurrenciesContract;
 use EFinancialsClient\Resources\Concerns\Transportable;
 use EFinancialsClient\Responses\Currencies\ListResponse;
 use EFinancialsClient\ValueObjects\Transporter\Payload;
+use EFinancialsClient\ValueObjects\Transporter\ResourcePath;
 use EFinancialsClient\ValueObjects\Transporter\Response;
 
 final class Currencies implements CurrenciesContract
@@ -21,7 +22,7 @@ final class Currencies implements CurrenciesContract
      */
     public function all(): ListResponse
     {
-        $payload = Payload::get('currencies');
+        $payload = Payload::get(ResourcePath::collection('currencies'));
 
         /** @var Response<array<int, array{id: string, name_est?: string|null, name_eng?: string|null}>> $response */
         $response = $this->transporter->request($payload);

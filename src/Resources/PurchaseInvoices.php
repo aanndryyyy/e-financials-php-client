@@ -13,6 +13,7 @@ use EFinancialsClient\Responses\ApiResponse;
 use EFinancialsClient\Responses\PurchaseInvoices\ListResponse;
 use EFinancialsClient\Responses\PurchaseInvoices\PurchaseInvoiceResponse;
 use EFinancialsClient\ValueObjects\Transporter\Payload;
+use EFinancialsClient\ValueObjects\Transporter\ResourcePath;
 use EFinancialsClient\ValueObjects\Transporter\Response;
 use InvalidArgumentException;
 
@@ -78,7 +79,7 @@ final class PurchaseInvoices implements PurchaseInvoicesContract
             $query['clients_id'] = $clientsId;
         }
 
-        $payload = Payload::get('purchase_invoices', $query);
+        $payload = Payload::get(ResourcePath::collection('purchase_invoices'), $query);
 
         /** @var Response<array{current_page: int, total_pages: int, items: array<int, array<string, mixed>>}> $response */
         $response = $this->transporter->request($payload);
@@ -95,7 +96,7 @@ final class PurchaseInvoices implements PurchaseInvoicesContract
      */
     public function get(int $id): PurchaseInvoiceResponse
     {
-        $payload = Payload::get('purchase_invoices/'.$id);
+        $payload = Payload::get(ResourcePath::one('purchase_invoices', $id));
 
         /** @var Response<array<string, mixed>> $response */
         $response = $this->transporter->request($payload);
@@ -135,7 +136,7 @@ final class PurchaseInvoices implements PurchaseInvoicesContract
             );
         }
 
-        $payload = Payload::post('purchase_invoices', $parameters);
+        $payload = Payload::post(ResourcePath::collection('purchase_invoices'), $parameters);
 
         /** @var Response<array{code: int, messages?: array<int, string>, created_object_id?: int|null}> $response */
         $response = $this->transporter->request($payload);
@@ -176,7 +177,7 @@ final class PurchaseInvoices implements PurchaseInvoicesContract
             );
         }
 
-        $payload = Payload::patch('purchase_invoices/'.$id, $parameters);
+        $payload = Payload::patch(ResourcePath::one('purchase_invoices', $id), $parameters);
 
         /** @var Response<array{code: int, messages?: array<int, string>, created_object_id?: int|null}> $response */
         $response = $this->transporter->request($payload);
@@ -193,7 +194,7 @@ final class PurchaseInvoices implements PurchaseInvoicesContract
      */
     public function delete(int $id): ApiResponse
     {
-        $payload = Payload::delete('purchase_invoices/'.$id);
+        $payload = Payload::delete(ResourcePath::one('purchase_invoices', $id));
 
         /** @var Response<array{code: int, messages?: array<int, string>, created_object_id?: int|null}> $response */
         $response = $this->transporter->request($payload);
@@ -210,7 +211,7 @@ final class PurchaseInvoices implements PurchaseInvoicesContract
      */
     public function register(int $id): ApiResponse
     {
-        $payload = Payload::patch('purchase_invoices/'.$id.'/register');
+        $payload = Payload::patch(ResourcePath::one('purchase_invoices', $id, 'register'));
 
         /** @var Response<array{code: int, messages?: array<int, string>, created_object_id?: int|null}> $response */
         $response = $this->transporter->request($payload);
@@ -227,7 +228,7 @@ final class PurchaseInvoices implements PurchaseInvoicesContract
      */
     public function invalidate(int $id): ApiResponse
     {
-        $payload = Payload::patch('purchase_invoices/'.$id.'/invalidate');
+        $payload = Payload::patch(ResourcePath::one('purchase_invoices', $id, 'invalidate'));
 
         /** @var Response<array{code: int, messages?: array<int, string>, created_object_id?: int|null}> $response */
         $response = $this->transporter->request($payload);
@@ -244,7 +245,7 @@ final class PurchaseInvoices implements PurchaseInvoicesContract
      */
     public function getFile(int $id): ApiFileResponse
     {
-        $payload = Payload::get('purchase_invoices/'.$id.'/document_user');
+        $payload = Payload::get(ResourcePath::one('purchase_invoices', $id, 'document_user'));
 
         /** @var Response<array{name: string, contents: string}> $response */
         $response = $this->transporter->request($payload);
@@ -280,7 +281,7 @@ final class PurchaseInvoices implements PurchaseInvoicesContract
             );
         }
 
-        $payload = Payload::put('purchase_invoices/'.$id.'/document_user', $parameters);
+        $payload = Payload::put(ResourcePath::one('purchase_invoices', $id, 'document_user'), $parameters);
 
         /** @var Response<array{code: int, messages?: array<int, string>, created_object_id?: int|null}> $response */
         $response = $this->transporter->request($payload);
@@ -297,7 +298,7 @@ final class PurchaseInvoices implements PurchaseInvoicesContract
      */
     public function deleteFile(int $id): ApiResponse
     {
-        $payload = Payload::delete('purchase_invoices/'.$id.'/document_user');
+        $payload = Payload::delete(ResourcePath::one('purchase_invoices', $id, 'document_user'));
 
         /** @var Response<array{code: int, messages?: array<int, string>, created_object_id?: int|null}> $response */
         $response = $this->transporter->request($payload);

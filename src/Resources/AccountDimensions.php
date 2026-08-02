@@ -8,6 +8,7 @@ use EFinancialsClient\Contracts\Resources\AccountDimensionsContract;
 use EFinancialsClient\Resources\Concerns\Transportable;
 use EFinancialsClient\Responses\AccountDimensions\ListResponse;
 use EFinancialsClient\ValueObjects\Transporter\Payload;
+use EFinancialsClient\ValueObjects\Transporter\ResourcePath;
 use EFinancialsClient\ValueObjects\Transporter\Response;
 
 final class AccountDimensions implements AccountDimensionsContract
@@ -21,7 +22,7 @@ final class AccountDimensions implements AccountDimensionsContract
      */
     public function all(): ListResponse
     {
-        $payload = Payload::get('account_dimensions');
+        $payload = Payload::get(ResourcePath::collection('account_dimensions'));
 
         /** @var Response<array<int, array<array-key, mixed>>> $response */
         $response = $this->transporter->request($payload);
