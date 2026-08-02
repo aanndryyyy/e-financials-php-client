@@ -17,13 +17,20 @@ use EFinancialsClient\Responses\Clients\ClientResponse;
 use EFinancialsClient\Responses\Clients\ListResponse as ClientsListResponse;
 use EFinancialsClient\Responses\CostProfitCentres\ListResponse as CostProfitCentresListResponse;
 use EFinancialsClient\Responses\Currencies\ListResponse as CurrenciesListResponse;
+use EFinancialsClient\Responses\Journals\JournalResponse;
+use EFinancialsClient\Responses\Journals\ListResponse as JournalsListResponse;
+use EFinancialsClient\Responses\Journals\PostingResponse;
 use EFinancialsClient\Responses\Products\ListResponse as ProductsListResponse;
 use EFinancialsClient\Responses\Products\ProductResponse;
+use EFinancialsClient\Responses\Transactions\ListResponse as TransactionsListResponse;
+use EFinancialsClient\Responses\Transactions\TransactionResponse;
 use EFinancialsClient\Testing\ClientFake;
 use EFinancialsClient\Testing\Responses\Fixtures\Accounts\AccountResponseFixture;
 use EFinancialsClient\Testing\Responses\Fixtures\Bank\BankAccountResponseFixture;
 use EFinancialsClient\Testing\Responses\Fixtures\Clients\ClientResponseFixture;
+use EFinancialsClient\Testing\Responses\Fixtures\Journals\JournalResponseFixture;
 use EFinancialsClient\Testing\Responses\Fixtures\Products\ProductResponseFixture;
+use EFinancialsClient\Testing\Responses\Fixtures\Transactions\TransactionResponseFixture;
 use EFinancialsClient\Transporters\HttpTransporter;
 use EFinancialsClient\ValueObjects\ApiCredentials;
 use EFinancialsClient\ValueObjects\Transporter\BaseUri;
@@ -59,7 +66,7 @@ it('returns decoded json from a successful request', function () {
 
     $client = new Client($transporter);
 
-    expect($client->journals()->all())->toBe(['ok' => true]);
+    expect($client->salesInvoices()->all())->toBe(['ok' => true]);
 });
 
 it('throws a typed exception for http errors', function () {
@@ -73,7 +80,7 @@ it('throws a typed exception for http errors', function () {
     );
 
     $client = new Client($transporter);
-    $client->journals()->all();
+    $client->salesInvoices()->all();
 })->throws(ErrorException::class, 'Unauthorized');
 
 it('exposes resource accessors', function () {
@@ -218,6 +225,74 @@ it('maps products to a fuller OpenAPI projection', function () {
 
     $fake->assertSent('products', fn (Payload $payload): bool => $payload->method()->value === 'GET');
     $fake->assertSent('products/36166', fn (Payload $payload): bool => $payload->method()->value === 'GET');
+});
+
+it('maps journals to a fuller OpenAPI projection', function () {
+    $fake = new ClientFake([
+        JournalsListResponse::fake(),
+        JournalResponse::fake(),
+    ]);
+
+    $list = $fake->journals()->all();
+
+    expect($list)->toBeInstanceOf(JournalsListResponse::class)
+        ->and($list->items)->toHaveCount(1)
+        ->and($list->items[0])->toBeInstanceOf(JournalResponse::class)
+        ->and($list->items[0]->id)->toBe(739)
+        ->and($list->items[0]->number)->toBe(10008)
+        ->and($list->items[0]->operationType)->toBe('EMTA_VAT_DECLARATION')
+        ->and($list->items[0]->registered)->toBeTrue()
+        ->and($list->items[0]->postings)->toHaveCount(2)
+        ->and($list->items[0]->postings[0])->toBeInstanceOf(PostingResponse::class)
+        ->and($list->items[0]->postings[0]->accountsId)->toBe(2511)
+        ->and($list->items[0]->postings[0]->type)->toBe('D')
+        ->and($list->items[0]->isDeleted)->toBeFalse()
+        ->and($list->items[0]->toArray())->toBe(
+            JournalResponse::from(JournalResponseFixture::ATTRIBUTES)->toArray()
+        );
+
+    $journal = $fake->journals()->get(739);
+
+    expect($journal)->toBeInstanceOf(JournalResponse::class)
+        ->and($journal->documentNumber)->toBe('EMTA KMD 31.05.2014')
+        ->and($journal->insertDate)->toBe('2014-06-20')
+        ->and($journal->registerDate)->toBe('2014-10-29');
+
+    $fake->assertSent('journals', fn (Payload $payload): bool => $payload->method()->value === 'GET');
+    $fake->assertSent('journals/739', fn (Payload $payload): bool => $payload->method()->value === 'GET');
+});
+
+it('maps transactions to a fuller OpenAPI projection', function () {
+    $fake = new ClientFake([
+        TransactionsListResponse::fake(),
+        TransactionResponse::fake(),
+    ]);
+
+    $list = $fake->transactions()->all();
+
+    expect($list)->toBeInstanceOf(TransactionsListResponse::class)
+        ->and($list->items)->toHaveCount(1)
+        ->and($list->items[0])->toBeInstanceOf(TransactionResponse::class)
+        ->and($list->items[0]->id)->toBe(2672)
+        ->and($list->items[0]->accountsId)->toBe(1010)
+        ->and($list->items[0]->amount)->toBe(2348.32)
+        ->and($list->items[0]->status)->toBe('CONFIRMED')
+        ->and($list->items[0]->type)->toBe('D')
+        ->and($list->items[0]->isDeleted)->toBeFalse()
+        ->and($list->items[0]->items)->toBe([])
+        ->and($list->items[0]->toArray())->toBe(
+            TransactionResponse::from(TransactionResponseFixture::ATTRIBUTES)->toArray()
+        );
+
+    $transaction = $fake->transactions()->get(2672);
+
+    expect($transaction)->toBeInstanceOf(TransactionResponse::class)
+        ->and($transaction->clCurrenciesId)->toBe('EUR')
+        ->and($transaction->date)->toBe('2015-01-31')
+        ->and($transaction->operationType)->toBeNull();
+
+    $fake->assertSent('transactions', fn (Payload $payload): bool => $payload->method()->value === 'GET');
+    $fake->assertSent('transactions/2672', fn (Payload $payload): bool => $payload->method()->value === 'GET');
 });
 
 it('builds a client through the factory facade', function () {
