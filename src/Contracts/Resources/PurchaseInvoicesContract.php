@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace EFinancialsClient\Contracts\Resources;
 
 use DateTime;
+use EFinancialsClient\Enums\InvoiceStatus;
+use EFinancialsClient\Enums\PaymentStatus;
 use EFinancialsClient\Responses\ApiFileResponse;
 use EFinancialsClient\Responses\ApiResponse;
 use EFinancialsClient\Responses\PurchaseInvoices\ListResponse;
@@ -21,11 +23,11 @@ interface PurchaseInvoicesContract
      * @param  DateTime|string  $modifiedSince  Return only objects modified since provided timestamp.
      * @param  DateTime|string  $startDate  Object created on given date or later.
      * @param  DateTime|string  $endDate  Object created on given date or before.
-     * @param  string  $status  Object status.
-     * @param  string  $paymentStatus  Object payment status.
+     * @param  InvoiceStatus|string  $status  Object status.
+     * @param  PaymentStatus|string  $paymentStatus  Object payment status.
      * @param  int|null  $clientsId  Supplier identificator.
      */
-    public function all(int $page = 1, DateTime|string $modifiedSince = '', DateTime|string $startDate = '', DateTime|string $endDate = '', string $status = '', string $paymentStatus = '', ?int $clientsId = null): ListResponse;
+    public function all(int $page = 1, DateTime|string $modifiedSince = '', DateTime|string $startDate = '', DateTime|string $endDate = '', InvoiceStatus|string $status = '', PaymentStatus|string $paymentStatus = '', ?int $clientsId = null): ListResponse;
 
     /**
      * Retrieve one specific purchase invoice of the specified company.

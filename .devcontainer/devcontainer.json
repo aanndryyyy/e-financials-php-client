@@ -2,7 +2,9 @@
 // README at: https://github.com/devcontainers/templates/tree/main/src/php
 {
 	"name": "PHP",
-	"image": "mcr.microsoft.com/devcontainers/php:1-8.2",
+	// Pest 5 / PHPUnit 13 (require-dev) need PHP >= 8.4, even though the
+	// library itself supports ^8.2 for consumers.
+	"image": "mcr.microsoft.com/devcontainers/php:1-8.4",
 
 	"customizations": {
 		"vscode": {
@@ -28,6 +30,9 @@
 
 	"postCreateCommand": {
 		"xdebug-fix": "echo \"xdebug.log = ${containerWorkspaceFolder}/xdebug.log\" | sudo tee -a /usr/local/etc/php/conf.d/xdebug.ini > /dev/null",
+		// PHPStan exhausts the 128M default and crashes; CI does not hit this
+		// because setup-php runs with memory_limit=-1.
+		"memory-limit": "echo \"memory_limit = 1G\" | sudo tee /usr/local/etc/php/conf.d/zz-memory-limit.ini > /dev/null",
 		"dependencies": "composer install"
 	}
 }
