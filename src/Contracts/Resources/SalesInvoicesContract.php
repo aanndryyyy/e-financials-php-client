@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace EFinancialsClient\Contracts\Resources;
 
 use DateTime;
+use EFinancialsClient\Enums\SaleInvoiceType;
 use EFinancialsClient\Responses\ApiFileResponse;
 use EFinancialsClient\Responses\ApiResponse;
 use EFinancialsClient\Responses\SalesInvoices\ListResponse;
@@ -40,6 +41,12 @@ interface SalesInvoicesContract
     /**
      * Create a new sale invoice of the specified company.
      *
+     * `sale_invoice_type` accepts a `SaleInvoiceType` case as well as a raw string.
+     * Credit invoices (kreeditarve) are created here too: `SaleInvoiceType::CREDIT_INVOICE`
+     * plus `credit_sale_invoices_id`, the original's `number_suffix` and negative
+     * `items[].amount`.
+     *
+     * @see SaleInvoiceType
      * @see https://rmp-api.rik.ee/api.html#operation/post-sale_invoices
      *
      * @param  array<string, mixed>  $parameters
@@ -49,6 +56,11 @@ interface SalesInvoicesContract
     /**
      * Modify one specific sale invoice of the specified company.
      *
+     * `sale_invoice_type` accepts a `SaleInvoiceType` case as well as a raw string.
+     * Do not use this to turn an existing invoice into a credit invoice — see the
+     * implementation for why that books the wrong accounting.
+     *
+     * @see SaleInvoiceType
      * @see https://rmp-api.rik.ee/api.html#operation/patch-sale_invoices_one
      *
      * @param  int  $id  Sale invoice identificator.

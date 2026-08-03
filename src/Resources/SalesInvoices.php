@@ -7,6 +7,7 @@ namespace EFinancialsClient\Resources;
 use DateTime;
 use DateTimeInterface;
 use EFinancialsClient\Contracts\Resources\SalesInvoicesContract;
+use EFinancialsClient\Enums\SaleInvoiceType;
 use EFinancialsClient\Resources\Concerns\Transportable;
 use EFinancialsClient\Responses\ApiFileResponse;
 use EFinancialsClient\Responses\ApiResponse;
@@ -108,6 +109,17 @@ final class SalesInvoices implements SalesInvoicesContract
     /**
      * Create a new sale invoice of the specified company.
      *
+     * `sale_invoice_type` accepts a {@see SaleInvoiceType}
+     * case as well as a raw string; enums are unwrapped to their value when the
+     * request is built.
+     *
+     * A credit invoice (kreeditarve) is created through this same endpoint:
+     * pass `sale_invoice_type` as `SaleInvoiceType::CREDIT_INVOICE`, `credit_sale_invoices_id`
+     * with the CONFIRMED original's id, the original's `number_suffix` (the server
+     * derives the `K`-suffixed number itself) and negative `items[].amount` with a
+     * positive `unit_net_price`. Any other `sale_invoice_type` combined with
+     * `credit_sale_invoices_id` makes the API return HTTP 500.
+     *
      * @see https://rmp-api.rik.ee/api.html#operation/post-sale_invoices
      *
      * @param  array<string, mixed>  $parameters
@@ -150,6 +162,14 @@ final class SalesInvoices implements SalesInvoicesContract
 
     /**
      * Modify one specific sale invoice of the specified company.
+     *
+     * `sale_invoice_type` accepts a {@see SaleInvoiceType} case as well as a raw string.
+     *
+     * Do not turn an existing invoice into a credit invoice by patching
+     * `credit_sale_invoices_id` in here. The API accepts it and links the records,
+     * but the invoice is still booked as an ordinary sale (D 1210 / C 1340, positive),
+     * which adds to the receivable instead of clearing it. Create credit invoices
+     * with `create()` instead.
      *
      * @see https://rmp-api.rik.ee/api.html#operation/patch-sale_invoices_one
      *

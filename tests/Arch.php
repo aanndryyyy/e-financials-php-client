@@ -3,6 +3,7 @@
 test('resources')->expect('EFinancialsClient\Resources')->toOnlyUse([
     'EFinancialsClient\Contracts\Resources',
     'EFinancialsClient\Contracts\TransporterContract',
+    'EFinancialsClient\Enums',
     'EFinancialsClient\Resources\Concerns\Transportable',
     'EFinancialsClient\Responses',
     'EFinancialsClient\ValueObjects\Transporter\Payload',

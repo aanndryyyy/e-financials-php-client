@@ -18,7 +18,15 @@ final class HttpClientFake implements ClientInterface
     /**
      * @param  list<ResponseInterface>  $queue
      */
-    public function __construct(private array $queue = []) {}
+    public function __construct(private array $queue = [])
+    {
+        // ..
+    }
+
+    /**
+     * @var list<RequestInterface>
+     */
+    private array $requests = [];
 
     /**
      * @param  list<ResponseInterface>  $responses
@@ -45,8 +53,18 @@ final class HttpClientFake implements ClientInterface
         return new Response($status, $headers, $body);
     }
 
+    /**
+     * @return list<RequestInterface>
+     */
+    public function requests(): array
+    {
+        return $this->requests;
+    }
+
     public function sendRequest(RequestInterface $request): ResponseInterface
     {
+        $this->requests[] = $request;
+
         $response = array_shift($this->queue);
 
         if (! $response instanceof ResponseInterface) {

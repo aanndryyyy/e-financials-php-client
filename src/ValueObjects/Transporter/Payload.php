@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace EFinancialsClient\ValueObjects\Transporter;
 
+use BackedEnum;
+use EFinancialsClient\Enums\SaleInvoiceType;
 use EFinancialsClient\Enums\Transporter\Method;
 use EFinancialsClient\ValueObjects\ApiCredentials;
 use Http\Discovery\Psr17Factory;
@@ -15,16 +17,53 @@ use Psr\Http\Message\RequestInterface;
 final class Payload
 {
     /**
+     * @var array<string, mixed>
+     */
+    private readonly array $query;
+
+    /**
+     * @var array<array-key, mixed>
+     */
+    private readonly array $body;
+
+    /**
      * @param  array<string, mixed>  $query
      * @param  array<array-key, mixed>  $body
      */
     private function __construct(
         private readonly Method $method,
         private readonly string $resource,
-        private readonly array $query = [],
-        private readonly array $body = [],
+        array $query = [],
+        array $body = [],
     ) {
-        // ..
+        /** @var array<string, mixed> $normalizedQuery */
+        $normalizedQuery = self::normalize($query);
+        /** @var array<array-key, mixed> $normalizedBody */
+        $normalizedBody = self::normalize($body);
+
+        $this->query = $normalizedQuery;
+        $this->body = $normalizedBody;
+    }
+
+    /**
+     * Unwraps backed enums to their scalar values, recursively.
+     *
+     * Callers may pass enums such as {@see SaleInvoiceType}
+     * anywhere the API expects the underlying string or integer.
+     *
+     * @param  array<array-key, mixed>  $values
+     * @return array<array-key, mixed>
+     */
+    private static function normalize(array $values): array
+    {
+        return array_map(
+            static fn (mixed $value): mixed => match (true) {
+                $value instanceof BackedEnum => $value->value,
+                is_array($value) => self::normalize($value),
+                default => $value,
+            },
+            $values,
+        );
     }
 
     /**
