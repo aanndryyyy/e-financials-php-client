@@ -50,8 +50,6 @@ it('sends no body when no distributions are supplied', function () {
 
     $fake->transactions()->register(2672);
 
-    // The spec does not mark the register requestBody as required, so an
-    // empty distribution list must send no body at all.
     $fake->assertSent(
         'transactions/2672/register',
         fn (Payload $payload): bool => $payload->body() === []
