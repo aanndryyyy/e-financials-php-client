@@ -26,7 +26,7 @@ it('unwraps transaction enums into the query string', function () {
 
     $fake->transactions()->all(
         status: TransactionStatus::CONFIRMED,
-        type: TransactionType::DEBIT,
+        type: TransactionType::D,
     );
 
     $fake->assertSent('transactions', fn (Payload $payload): bool => $payload->query() === [
