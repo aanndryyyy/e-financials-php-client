@@ -7,6 +7,8 @@ namespace EFinancialsClient\Resources;
 use DateTime;
 use DateTimeInterface;
 use EFinancialsClient\Contracts\Resources\SalesInvoicesContract;
+use EFinancialsClient\Enums\InvoiceStatus;
+use EFinancialsClient\Enums\PaymentStatus;
 use EFinancialsClient\Enums\SaleInvoiceType;
 use EFinancialsClient\Resources\Concerns\Transportable;
 use EFinancialsClient\Responses\ApiFileResponse;
@@ -32,8 +34,8 @@ final class SalesInvoices implements SalesInvoicesContract
      * @param  DateTime|string  $modifiedSince  Return only objects modified since provided timestamp.
      * @param  DateTime|string  $startDate  Object revenue date on given date or later.
      * @param  DateTime|string  $endDate  Object revenue date on given date or before.
-     * @param  string  $status  Object status.
-     * @param  string  $paymentStatus  Object payment status.
+     * @param  InvoiceStatus|string  $status  Object status.
+     * @param  PaymentStatus|string  $paymentStatus  Object payment status.
      * @param  int|null  $clientsId  Customer identificator.
      */
     public function all(
@@ -41,8 +43,8 @@ final class SalesInvoices implements SalesInvoicesContract
         DateTime|string $modifiedSince = '',
         DateTime|string $startDate = '',
         DateTime|string $endDate = '',
-        string $status = '',
-        string $paymentStatus = '',
+        InvoiceStatus|string $status = '',
+        PaymentStatus|string $paymentStatus = '',
         ?int $clientsId = null,
     ): ListResponse {
         $query = [];
