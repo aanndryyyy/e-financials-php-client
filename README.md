@@ -7,7 +7,7 @@ API docs: [OpenAPI HTML](https://demo-rmp-api.rik.ee/api.html) · [openapi.yaml]
 ## Installation
 
 ```bash
-composer require e-financials/php-client guzzlehttp/guzzle
+composer require aanndryyyy/e-financials-php-client guzzlehttp/guzzle
 ```
 
 This package is PSR-18 based. Provide any PSR-18 HTTP client; Guzzle is the usual choice and is used for discovery when installed.
@@ -105,3 +105,26 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
 | `templates()` | Sale invoice templates |
 
 Demo API base URL: `https://demo-rmp-api.rik.ee` (version path `/v1`).
+
+## License
+
+Copyright (c) 2026 Arbictus OÜ.
+
+Dual-licensed. Use it under **either**:
+
+- **[GPL-2.0-or-later](LICENSE)** — free of charge, including for commercial
+  companies, as long as you meet the copyleft obligations. This covers
+  evaluation, development, internal and hosted use, non-profit and educational
+  projects, and distribution within GPL-compatible open source.
+- **[A commercial license](LICENSE-COMMERCIAL.md)** — for distributing a
+  closed-source product that incorporates this library, or when you need
+  warranty and indemnification terms. Contact andry.pedak@arbictus.eu.
+
+You only need the commercial branch if the GPL does not work for you. Running
+this library on your own servers is not distribution and triggers no copyleft
+obligation.
+
+## Disclaimer
+
+Independent, unofficial client for a public REST API. Not affiliated with,
+endorsed by, or supported by Registrite ja Infosüsteemide Keskus (RIK).

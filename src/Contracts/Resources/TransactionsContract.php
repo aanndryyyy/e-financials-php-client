@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace EFinancialsClient\Contracts\Resources;
 
 use DateTime;
+use EFinancialsClient\Enums\TransactionStatus;
+use EFinancialsClient\Enums\TransactionType;
 use EFinancialsClient\Responses\ApiFileResponse;
 use EFinancialsClient\Responses\ApiResponse;
 use EFinancialsClient\Responses\Transactions\ListResponse;
@@ -21,11 +23,11 @@ interface TransactionsContract
      * @param  DateTime|string  $modifiedSince  Return only objects modified since provided timestamp.
      * @param  DateTime|string  $startDate  Date on given date or later.
      * @param  DateTime|string  $endDate  Date on given date or before.
-     * @param  string  $status  Object status.
-     * @param  string  $type  Object type.
+     * @param  TransactionStatus|string  $status  Object status.
+     * @param  TransactionType|string  $type  Object type.
      * @param  int|null  $clientsId  Customer identificator.
      */
-    public function all(int $page = 1, DateTime|string $modifiedSince = '', DateTime|string $startDate = '', DateTime|string $endDate = '', string $status = '', string $type = '', ?int $clientsId = null): ListResponse;
+    public function all(int $page = 1, DateTime|string $modifiedSince = '', DateTime|string $startDate = '', DateTime|string $endDate = '', TransactionStatus|string $status = '', TransactionType|string $type = '', ?int $clientsId = null): ListResponse;
 
     /**
      * Retrieve one specific transaction of the specified company.
@@ -70,7 +72,7 @@ interface TransactionsContract
      * @see https://rmp-api.rik.ee/api.html#operation/patch-transactions_one_register
      *
      * @param  int  $id  Transaction identificator.
-     * @param  array<int, mixed>  $distributions  Optional transaction distribution rows.
+     * @param  array<int, array<string, mixed>>  $distributions  Optional transaction distribution rows.
      */
     public function register(int $id, array $distributions = []): ApiResponse;
 

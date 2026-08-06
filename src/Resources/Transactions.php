@@ -7,6 +7,8 @@ namespace EFinancialsClient\Resources;
 use DateTime;
 use DateTimeInterface;
 use EFinancialsClient\Contracts\Resources\TransactionsContract;
+use EFinancialsClient\Enums\TransactionStatus;
+use EFinancialsClient\Enums\TransactionType;
 use EFinancialsClient\Resources\Concerns\Transportable;
 use EFinancialsClient\Responses\ApiFileResponse;
 use EFinancialsClient\Responses\ApiResponse;
@@ -30,8 +32,8 @@ final class Transactions implements TransactionsContract
      * @param  DateTime|string  $modifiedSince  Return only objects modified since provided timestamp.
      * @param  DateTime|string  $startDate  Date on given date or later.
      * @param  DateTime|string  $endDate  Date on given date or before.
-     * @param  string  $status  Object status.
-     * @param  string  $type  Object type.
+     * @param  TransactionStatus|string  $status  Object status.
+     * @param  TransactionType|string  $type  Object type.
      * @param  int|null  $clientsId  Customer identificator.
      */
     public function all(
@@ -39,8 +41,8 @@ final class Transactions implements TransactionsContract
         DateTime|string $modifiedSince = '',
         DateTime|string $startDate = '',
         DateTime|string $endDate = '',
-        string $status = '',
-        string $type = '',
+        TransactionStatus|string $status = '',
+        TransactionType|string $type = '',
         ?int $clientsId = null,
     ): ListResponse {
         $query = [];
@@ -204,10 +206,30 @@ final class Transactions implements TransactionsContract
      * @see https://rmp-api.rik.ee/api.html#operation/patch-transactions_one_register
      *
      * @param  int  $id  Transaction identificator.
-     * @param  array<int, mixed>  $distributions  Optional transaction distribution rows.
+     * @param  array<int, array<string, mixed>>  $distributions  Optional transaction distribution rows.
      */
     public function register(int $id, array $distributions = []): ApiResponse
     {
+        foreach ($distributions as $index => $distribution) {
+            $missingRequiredParameters = array_diff_key(
+                array_flip(
+                    [
+                        'related_table',
+                        'amount',
+                    ]
+                ),
+                $distribution
+            );
+
+            if (count($missingRequiredParameters) !== 0) {
+                $missingKeys = implode(', ', array_keys($missingRequiredParameters));
+
+                throw new InvalidArgumentException(
+                    "Distribution row $index is missing required parameter(s): $missingKeys"
+                );
+            }
+        }
+
         $payload = Payload::patch(ResourcePath::one('transactions', $id, 'register'), $distributions);
 
         /** @var Response<array{code: int, messages?: array<int, string>, created_object_id?: int|null}> $response */
