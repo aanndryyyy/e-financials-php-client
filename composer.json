@@ -1,7 +1,21 @@
 {
     "name": "aanndryyyy/e-financials-php-client",
     "description": "PHP client for the e-Arveldaja / e-Financials REST API",
-    "keywords": ["php", "e-financials", "e-arveldaja", "api", "client", "sdk"],
+    "keywords": [
+        "php",
+        "e-financials",
+        "e-arveldaja",
+        "api",
+        "client",
+        "sdk",
+        "accounting",
+        "invoicing",
+        "bookkeeping",
+        "estonia",
+        "rik",
+        "psr-18"
+    ],
+    "homepage": "https://github.com/aanndryyyy/e-financials-php-client",
     "type": "library",
     "license": ["GPL-2.0-or-later", "proprietary"],
     "authors": [
@@ -14,12 +28,14 @@
         {
             "name": "Andry Pedak",
             "email": "andry.pedak@arbictus.eu",
+            "homepage": "https://pedak.me",
             "role": "Developer"
         }
     ],
     "support": {
         "issues": "https://github.com/aanndryyyy/e-financials-php-client/issues",
         "source": "https://github.com/aanndryyyy/e-financials-php-client",
+        "docs": "https://github.com/aanndryyyy/e-financials-php-client#readme",
         "email": "andry.pedak@arbictus.eu"
     },
     "require": {
@@ -45,6 +61,10 @@
         "phpstan/phpstan-deprecation-rules": "^2.0.5",
         "phpstan/phpstan-strict-rules": "^2.0.12",
         "symfony/var-dumper": "^8.1.2"
+    },
+    "suggest": {
+        "guzzlehttp/guzzle": "A PSR-18 client and PSR-17 factory implementation, auto-detected by php-http/discovery (^8.0)",
+        "nyholm/psr7": "A lightweight PSR-7/PSR-17 implementation; pair with symfony/http-client or another PSR-18 client"
     },
     "autoload": {
         "psr-4": {

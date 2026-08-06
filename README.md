@@ -12,6 +12,10 @@ composer require aanndryyyy/e-financials-php-client guzzlehttp/guzzle
 
 This package is PSR-18 based. Provide any PSR-18 HTTP client; Guzzle is the usual choice and is used for discovery when installed.
 
+## Related
+
+Using WooCommerce? [e-financials-woocommerce-integration](https://github.com/aanndryyyy/e-financials-woocommerce-integration) builds on this client to sync WooCommerce orders into e-Financials.
+
 ## Authentication
 
 Generate an API key in e-Arveldaja under **Seadistused → Üldised seadistused**. Each request is signed with:
