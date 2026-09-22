@@ -55,7 +55,7 @@
         "nunomaduro/collision": "^8.9.5",
         "pestphp/pest": "^5.0.2",
         "pestphp/pest-plugin-arch": "^5.0.0",
-        "pestphp/pest-plugin-mutate": "^5.0.0",
+        "pestphp/pest-plugin-mutate": "^5.0.2",
         "pestphp/pest-plugin-type-coverage": "^5.0.0",
         "phpstan/phpstan": "^2.2.7",
         "phpstan/phpstan-deprecation-rules": "^2.0.5",
@@ -88,13 +88,6 @@
             "cweagans/composer-patches": true,
             "pestphp/pest-plugin": true,
             "php-http/discovery": false
-        }
-    },
-    "extra": {
-        "patches": {
-            "pestphp/pest-plugin-mutate": {
-                "Fix php-code-coverage 14 coverage-php array format (pestphp/pest#1790)": "patches/pest-plugin-mutate-coverage-php-14.patch"
-            }
         }
     },
     "scripts": {
