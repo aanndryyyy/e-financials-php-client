@@ -26,8 +26,14 @@
 		}
 	},
 
+	// Keep step debugging and let Xdebug collect coverage; PCOV takes precedence when loaded
+	"containerEnv": {
+		"XDEBUG_MODE": "debug,coverage"
+	},
+
 	"postCreateCommand": {
 		"xdebug-fix": "echo \"xdebug.log = ${containerWorkspaceFolder}/xdebug.log\" | sudo tee -a /usr/local/etc/php/conf.d/xdebug.ini > /dev/null",
+		"pcov": "sudo pecl install pcov > /dev/null && echo \"extension=pcov.so\" | sudo tee /usr/local/etc/php/conf.d/docker-php-ext-pcov.ini > /dev/null",
 		"memory-limit": "echo \"memory_limit = 1G\" | sudo tee /usr/local/etc/php/conf.d/zz-memory-limit.ini > /dev/null",
 		"dependencies": "composer install"
 	}
