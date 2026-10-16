@@ -40,3 +40,7 @@ test('resources are final')
 test('resource contracts are interfaces')
     ->expect('EFinancialsClient\Contracts\Resources')
     ->toBeInterfaces();
+
+test('source files declare strict types')
+    ->expect('EFinancialsClient')
+    ->toUseStrictTypes();
