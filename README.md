@@ -14,7 +14,7 @@ This package is PSR-18 based. Provide any PSR-18 HTTP client; Guzzle is the usua
 
 ## Related
 
-Using WooCommerce? [e-financials-woocommerce-integration](https://github.com/aanndryyyy/e-financials-woocommerce-integration) builds on this client to sync WooCommerce orders into e-Financials.
+Using WooCommerce? [arbictus-sync-for-e-arveldaja](https://github.com/aanndryyyy/arbictus-sync-for-e-arveldaja) builds on this client to sync WooCommerce orders into e-Financials.
 
 ## Authentication
 
